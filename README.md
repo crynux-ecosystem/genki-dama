@@ -9,7 +9,6 @@
 
 ![Genki-Dama](genki.gif)
 
----
 </div>
 
 ---
@@ -17,7 +16,7 @@
 - [Federated Learning](#federated-learning)
 - [Miner](#miner)
 - [Validator](#validator)
-- [Dama](#dama)
+- [Roadmap](#roadmap)
 - [License](#license)
 
 ---
@@ -44,7 +43,7 @@ Presently, Large Language Models (LLMs) alignment demands significant [human eff
 
 Furthermore, as LLM pretraining exhausts public accessible data reservoirs, federated learning emerges as a viable solution to tap into additional high-quality data for both pretraining and fine-tuning purposes.
 
-![Genki-Dama Overview](docs/fl.png)
+![Genki-Dama Overview](overview.png)
 
 
 ## Miner
@@ -52,9 +51,13 @@ Furthermore, as LLM pretraining exhausts public accessible data reservoirs, fede
 
 Utilizing Crynux decentralized computing layer, miners engage with validators by finetuning on a base model with a customized datasets. The process involves the following steps:
 
-1. Data preparation: provide a high-quality dataset for a particular finetune task.
+1. Data collect: provide a high-quality dataset for a particular finetune task.
 2. Finetune: train the model with customized datasets.
 3. Commit: public the model to huggingface
+
+Miners can choose whether to share their data:
+* If they share data, data will be available on marketplace to trade.
+* If they keep data private, only gradients will be communicated over network.
 
 ## Validator
 
@@ -67,11 +70,34 @@ Although it is difficult to evaluate data quality directly, validators can evalu
 Validators order miners by their commit timestamp, and weight them with the score: (0.95 - data_similarity) * ∆loss 
 
 
-## Dama
+## Roadmap
 
-We will start with a simple finetune task for proof-of-concept:
+### Proof-of-concept
+We start with a simple finetune task for proof-of-concept:
 1. Miners provide high-quality datasets to write like Shakespeare on Tiny-GPT
 2. Validators evaluate generated output on a predefined instruction dataset, and evaluate the data similarity between different miners.
+
+### Federated Instruction Finetune
+
+We utilizes Genki-Dama to finetune LLMs that can perform state-of-the-art results on benchmarks.
+
+This is the improvement over [Shepherd-7B](https://arxiv.org/pdf/2305.05644)
+
+### Data Markeplace
+
+Miners optionally choose whether to share their data. Data quality is measured by the model trained from these data.
+
+Clients can buy data from the marketplace.
+
+Genki-Dama earns fees from these transactions.
+
+### Model for Applications
+
+Genki-Dama will be used to train models in real-world applications.
+
+Validators evaluate the model quality via real traffic of applications. 
+
+Genki-Dama earns license fee from these models.
 
 
 ## License
