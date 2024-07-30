@@ -25,6 +25,8 @@
 
 Genki-Dama, inspired by the iconic Dragon Ball technique, is the first open-source machine learning framework that utilizes decentralized data and harnesses decentralized computing resources. Built upon the incentive mechanism of BitTensor, and the computing network of Crynux, Genki-Dama empowers federated learning in a decentralized manner, shattering the limitation of centralized approaches.
 
+The subnet aims to incentivize miners to contribute high quality data and train creative generative models with federated learning.
+
 It includes two parts:
 * Genki: machine-learning SDK to utilize BitTensor incentive mechanism and Crynux decentralized computing resources
 * Dama: open-sourced model checkpoints trained by Genki
@@ -82,6 +84,10 @@ We start with a simple finetune task for proof-of-concept:
 We utilizes Genki-Dama to finetune LLMs that can perform state-of-the-art results on benchmarks.
 
 This is the improvement over [Shepherd-7B](https://arxiv.org/pdf/2305.05644)
+
+### Multi-modality Models
+
+Expand the landscape to other modality models: image generation, music generation, etc.
 
 ### Data Markeplace
 
