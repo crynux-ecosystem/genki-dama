@@ -28,8 +28,8 @@ Genki-Dama, inspired by the iconic Dragon Ball technique, is the first open-sour
 The subnet aims to incentivize miners to contribute high quality data and train creative generative models with federated learning.
 
 It includes two parts:
-* Genki: machine-learning SDK to utilize BitTensor incentive mechanism and Crynux decentralized computing resources
-* Dama: open-sourced model checkpoints trained by Genki
+* Genki: federated learning SDK to utilize BitTensor incentive mechanism and Crynux decentralized computing resources
+* Dama: open-sourced model checkpoints trained by Genki, we will focus on creative generative models
 
 ## Federated Learning
 
