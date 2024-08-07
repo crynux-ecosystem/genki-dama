@@ -68,8 +68,9 @@ Validators are responsible for evaluating the performance from each miners, and 
 Although it is difficult to evaluate data quality directly, validators can evaluate the performance of finetuned model, and set weights considering these factors:
 * Model quality: model will be evaluated by cross-validation with other datasets.
 * Data similarity: validators set higher weights to data with less similarity to encourage miners provide diversified data.
+* Shapley value: each data will be calculated to its shapley value as the contribution of data.
 
-Validators order miners by their commit timestamp, and weight them with the score: (0.95 - data_similarity) * ∆loss 
+Validators order miners by their commit timestamp, and weight them with the score: (0.95 - data_similarity) * ∆loss * shapley 
 
 
 ## Roadmap
