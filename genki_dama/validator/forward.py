@@ -30,6 +30,12 @@ async def forward(self):
     # get_random_uids is an example method, but you can replace it with your own.
     all_uids = self.metagraph.uids
 
+    stake = self.metagraph.S
+    weights = self.metagraph.W
+    dividends = self.metagraph.D
+
+    bt.logging.info(f"stake: {stake}, weights: {weights}, dividends: {dividends}")
+
     # Log the results for monitoring purposes.
     bt.logging.info(f"All miners: {all_uids}")
     # bt.logging.info(bt.metagraph.axons)
@@ -44,5 +50,6 @@ async def forward(self):
     bt.logging.info(f"Scored responses: {rewards}")
 
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
-    # self.update_scores(rewards, all_uids)
+    self.update_scores(rewards, all_uids)
+    self.set_weights()
     time.sleep(30)
