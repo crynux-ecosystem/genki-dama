@@ -22,12 +22,13 @@ import time
 
 # Bittensor
 import bittensor as bt
+import numpy as np
 
 # import base validator class which takes care of most of the boilerplate
-from template.base.validator import BaseValidatorNeuron
-# Bittensor Validator Template:
-from template.validator import forward
+from genki_dama.base.validator import BaseValidatorNeuron
 
+from genki_dama.utils.uids import check_uid_availability
+from genki_dama.validator import forward
 
 class Validator(BaseValidatorNeuron):
     """
@@ -44,8 +45,6 @@ class Validator(BaseValidatorNeuron):
         bt.logging.info("load_state()")
         self.load_state()
 
-        # TODO(developer): Anything specific to your use case you can do here
-
     async def forward(self):
         """
         Validator forward pass. Consists of:
@@ -55,7 +54,6 @@ class Validator(BaseValidatorNeuron):
         - Rewarding the miners
         - Updating the scores
         """
-        # TODO(developer): Rewrite this function based on your protocol definition.
         return await forward(self)
 
 
