@@ -10,10 +10,8 @@ Prerequisites:
 """
 
 import asyncio
-import json
 import os
 import argparse
-import torch
 import constants
 from model.storage.hugging_face.hugging_face_model_store import HuggingFaceModelStore
 from model.model_updater import ModelUpdater
@@ -141,10 +139,9 @@ async def main(config: bt.config):
     model_id = ModelId(
         namespace=repo_namespace,
         name=repo_name,
-        chat_template=config.chat_template,
         competition_id=config.competition_id,
         commit=config.model_commit_id,
-        hash=str(regenerate_hash(repo_namespace, repo_name, config.chat_template, config.competition_id)),
+        hash=str(regenerate_hash(repo_namespace, repo_name, config.competition_id)),
     )
 
     if not config.skip_model_upload:
@@ -171,7 +168,6 @@ async def main(config: bt.config):
     model_id_with_hash = ModelId(
         namespace=repo_namespace,
         name=repo_name,
-        chat_template=config.chat_template,
         hash=str(regenerate_hash(repo_namespace, repo_name, config.competition_id)),
         commit=model_id_with_commit.commit,
         competition_id=config.competition_id,

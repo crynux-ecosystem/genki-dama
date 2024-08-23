@@ -6,7 +6,7 @@ from model.data import ModelId, ModelMetadata
 from model.storage.model_metadata_store import ModelMetadataStore
 from typing import Optional
 
-from utilities import utils
+from utils.misc import run_in_subprocess
 
 
 class ChainModelMetadataStore(ModelMetadataStore):
@@ -34,7 +34,7 @@ class ChainModelMetadataStore(ModelMetadataStore):
             self.subnet_uid,
             model_id.to_compressed_str(),
         )
-        utils.run_in_subprocess(partial, 60)
+        run_in_subprocess(partial, 60)
 
     async def retrieve_model_metadata(self, hotkey: str) -> Optional[ModelMetadata]:
         """Retrieves model metadata on this subnet for specific hotkey"""
@@ -42,7 +42,7 @@ class ChainModelMetadataStore(ModelMetadataStore):
         # Wrap calls to the subtensor in a subprocess with a timeout to handle potential hangs.
         partial = functools.partial(bt.extrinsics.serving.get_metadata, self.subtensor, self.subnet_uid, hotkey)
 
-        metadata = utils.run_in_subprocess(partial, 60)
+        metadata = run_in_subprocess(partial, 60)
 
         if not metadata:
             return None
