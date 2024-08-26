@@ -1,14 +1,3 @@
-"""A script that pushes a model from disk to the subnet for evaluation.
-
-Usage:
-    python scripts/upload_model.py --load_model_dir <path to model> --hf_repo_id my-username/my-project --wallet.name coldkey --wallet.hotkey hotkey
-
-Prerequisites:
-   1. HF_ACCESS_TOKEN is set in the environment or .env file.
-   2. load_model_dir points to a directory containing a previously trained model, with relevant ckpt file named "checkpoint.pth".
-   3. Your miner is registered
-"""
-
 import asyncio
 import os
 import argparse
@@ -48,6 +37,7 @@ def get_config():
         type=str,
         default=constants.SUBNET_UID,
         help="The subnet UID.",
+
     )
     parser.add_argument(
         "--competition_id",
@@ -55,6 +45,7 @@ def get_config():
         default=constants.ORIGINAL_COMPETITION_ID,
         help="competition to mine for (use --list-competitions to get all competitions)",
     )
+
     parser.add_argument("--list_competitions", action="store_true", help="Print out all competitions")
 
     parser.add_argument("--model_commit_id", type=str, help="The commit id of the model to upload")
@@ -119,21 +110,18 @@ def check_model_dir(model_dir):
 
 
 async def main(config: bt.config):
-    # Create bittensor objects.
-    bt.logging(config=config)
 
     wallet = bt.wallet(config=config)
     subtensor = bt.subtensor(config=config)
-    bt.logging.debug("Subtensor network: ", subtensor.network)
+    bt.logging.debug(f"Subtensor network: {subtensor.network}")
     metagraph = subtensor.metagraph(config.netuid)
 
-    # Make sure we're registered and have a HuggingFace token.
     assert_registered(wallet, metagraph)
 
     # Get current model parameters
     parameters = ModelUpdater.get_competition_parameters(config.competition_id)
     if parameters is None:
-        raise RuntimeError(f"Could not get competition parameters for block {config.competition_id}")
+        raise RuntimeError(f"Could not get competition parameters for competition id: {config.competition_id}")
 
     repo_namespace, repo_name = validate_hf_repo_id(config.hf_repo_id)
     model_id = ModelId(
@@ -151,12 +139,13 @@ async def main(config: bt.config):
 
         remote_model_store = HuggingFaceModelStore()
 
-        bt.logging.info(f"Uploading model to Hugging Face with id {model_id}")
+        bt.logging.info(f"Uploading model to Huggingface with id {model_id}")
 
         model_id_with_commit = await remote_model_store.upload_model(
             model=model,
             competition_parameters=parameters,
         )
+
     else:
         # get the latest commit id of hf repo
         model_id_with_commit = model_id
@@ -197,8 +186,15 @@ async def main(config: bt.config):
 
 
 if __name__ == "__main__":
-    # Parse and print configuration
     config = get_config()
+
+    print(config.logging)
+
+    # Set up logging with the provided configuration.
+    bt.logging.set_config(config=config.logging)
+    bt.logging.info(config)
+    bt.logging.info("Submitting model for miner")
+
     if config.list_competitions:
         bt.logging.info(constants.COMPETITION_SCHEDULE)
     else:
