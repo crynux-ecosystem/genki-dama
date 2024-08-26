@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Validator",
+            "name": "Validator",
             "type": "debugpy",
             "request": "launch",
             "program": "./neurons/validator.py",
@@ -16,6 +16,23 @@
                 "--wallet.name", "validator2",
                 "--wallet.hotkey", "default",
                 "--neuron.axon_off",
+                "--logging.debug"
+            ]
+        },
+        {
+            "name": "Miner Submit Model",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "./genki_dama/submit_model.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--netuid", "1",
+                "--subtensor.chain_endpoint", "ws://13.230.121.53:9946",
+                "--wallet.name", "miner2",
+                "--wallet.hotkey", "default",
+                "--model_dir", "./model",
+                "--competition_id", "d1",
+                "--hf_repo_id", "lukewwww/genki-dama-test",
                 "--logging.debug"
             ]
         }

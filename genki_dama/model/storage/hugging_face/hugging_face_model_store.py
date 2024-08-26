@@ -55,7 +55,6 @@ class HuggingFaceModelStore(RemoteModelStore):
         model_id_with_commit = ModelId(
             namespace=model.id.namespace,
             name=model.id.name,
-            chat_template=model.id.chat_template,
             hash=model.id.hash,
             commit=commit_info.oid,
             competition_id=model.id.competition_id,
