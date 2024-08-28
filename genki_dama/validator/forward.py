@@ -35,11 +35,9 @@ def get_miner_entry(self, hotkey: str) -> Optional[MinerEntry]:
         commitment = metadata["info"]["fields"][0]
         hex_data = commitment[list(commitment.keys())[0]][2:]
         chain_str = bytes.fromhex(hex_data).decode()
-        model_id = CreativeModel.from_compressed_str(chain_str)
+        creative_model = CreativeModel.from_compressed_str(chain_str)
         block = metadata["block"]
-        entry = MinerEntry()
-        entry.block = block
-        entry.model_id = model_id
+        entry = MinerEntry(block=block, hotkey=hotkey, creative_model=creative_model)
         return entry
     except Exception as e:
         bt.logging.error(f"could not fetch data for {hotkey} : {e}")
@@ -61,11 +59,11 @@ async def forward(self):
     bt.logging.info(f"All miners: {all_uids}")
 
     # Get all the submitted models from the miners.
-    for uid in range(all_uids):
+    for uid in all_uids:
         miner_entry = get_miner_entry(self, self.metagraph.hotkeys[uid])
         if miner_entry is not None:
             bt.logging.debug(f"Miner hotkey: {miner_entry.hotkey}")
-            bt.logging.debug(f"Miner model: {miner_entry.model_id.namespace} / {miner_entry.model_id.name}")
+            bt.logging.debug(f"Miner model: {miner_entry.creative_model.namespace} / {miner_entry.creative_model.name}")
         else:
             bt.logging.debug(f"No model found for hotkey: {self.metagraph.hotkeys[uid]}")
 
