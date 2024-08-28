@@ -64,6 +64,7 @@ async def forward(self):
         if miner_entry is not None:
             bt.logging.debug(f"Miner hotkey: {miner_entry.hotkey}")
             bt.logging.debug(f"Miner model: {miner_entry.creative_model.namespace} / {miner_entry.creative_model.name}")
+            bt.logging.debug(f"Submitted block: {miner_entry.block}")
         else:
             bt.logging.debug(f"No model found for hotkey: {self.metagraph.hotkeys[uid]}")
 
