@@ -3,7 +3,7 @@ import datetime
 import os
 from typing import Dict
 from constants import CompetitionParameters
-from model.data import Model, ModelId
+from genki_dama.model.creative_model import Model, ModelId
 from model.storage.disk import utils
 from model.storage.local_model_store import LocalModelStore
 from transformers import AutoModelForCausalLM, AutoTokenizer

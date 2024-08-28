@@ -2,7 +2,7 @@ import bittensor as bt
 from typing import Optional
 from constants import CompetitionParameters, COMPETITION_SCHEDULE
 import constants
-from model.data import ModelMetadata, Model
+from genki_dama.model.creative_model import OnChainModel
 from model.model_tracker import ModelTracker
 from model.storage.local_model_store import LocalModelStore
 from model.storage.model_metadata_store import ModelMetadataStore
@@ -35,7 +35,7 @@ class ModelUpdater:
                 return x
         return None
 
-    async def _get_metadata(self, hotkey: str) -> Optional[ModelMetadata]:
+    async def _get_metadata(self, hotkey: str) -> Optional[OnChainModel]:
         """Get metadata about a model by hotkey"""
         return await self.metadata_store.retrieve_model_metadata(hotkey)
 

@@ -4,7 +4,7 @@ import hashlib
 import os
 import shutil
 import sys
-from model.data import ModelId
+from genki_dama.model.creative_model import CreativeModel
 
 
 def get_local_miners_dir(base_dir: str) -> str:
@@ -16,27 +16,27 @@ def get_local_miner_dir(base_dir: str, hotkey: str) -> str:
 
 
 # Hugging face stores models under models--namespace--name/snapshots/commit when downloading.
-def get_local_model_dir(base_dir: str, hotkey: str, model_id: ModelId) -> str:
+def get_local_model_dir(base_dir: str, hotkey: str, creative_model: CreativeModel) -> str:
     return os.path.join(
         get_local_miner_dir(base_dir, hotkey),
-        "models" + "--" + model_id.namespace + "--" + model_id.name,
+        "models" + "--" + creative_model.namespace + "--" + creative_model.name,
     )
 
 
-def get_local_model_snapshot_dir(base_dir: str, hotkey: str, model_id: ModelId) -> str:
+def get_local_model_snapshot_dir(base_dir: str, hotkey: str, creative_model: CreativeModel) -> str:
     return os.path.join(
-        get_local_model_dir(base_dir, hotkey, model_id),
+        get_local_model_dir(base_dir, hotkey, creative_model),
         "snapshots",
-        model_id.commit,
+        creative_model.commit,
     )
 
 
-def get_hf_download_path(local_path: str, model_id: ModelId) -> str:
+def get_hf_download_path(local_path: str, creative_model: CreativeModel) -> str:
     return os.path.join(
         local_path,
-        "models" + "--" + model_id.namespace + "--" + model_id.name,
+        "models" + "--" + creative_model.namespace + "--" + creative_model.name,
         "snapshots",
-        model_id.commit,
+        creative_model.commit,
     )
 
 

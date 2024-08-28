@@ -18,11 +18,32 @@
 # DEALINGS IN THE SOFTWARE.
 
 import time
+from typing import Optional
 import bittensor as bt
 
+from genki_dama.model.creative_model import CreativeModel
+from genki_dama.model.miner_entry import MinerEntry
 from genki_dama.protocol import Dummy
 from genki_dama.validator.reward import get_rewards
 from genki_dama.utils.uids import get_random_uids
+
+def get_miner_entry(self, hotkey: str) -> Optional[MinerEntry]:
+    try:
+        metadata = bt.extrinsics.serving.get_metadata(self.subtensor, self.config.netuid, hotkey)
+        if metadata is None:
+            return None
+        commitment = metadata["info"]["fields"][0]
+        hex_data = commitment[list(commitment.keys())[0]][2:]
+        chain_str = bytes.fromhex(hex_data).decode()
+        model_id = CreativeModel.from_compressed_str(chain_str)
+        block = metadata["block"]
+        entry = MinerEntry()
+        entry.block = block
+        entry.model_id = model_id
+        return entry
+    except Exception as e:
+        bt.logging.error(f"could not fetch data for {hotkey} : {e}")
+        return None
 
 
 async def forward(self):
@@ -38,6 +59,16 @@ async def forward(self):
 
     # Log the results for monitoring purposes.
     bt.logging.info(f"All miners: {all_uids}")
+
+    # Get all the submitted models from the miners.
+    for uid in range(all_uids):
+        miner_entry = get_miner_entry(self, self.metagraph.hotkeys[uid])
+        if miner_entry is not None:
+            bt.logging.debug(f"Miner hotkey: {miner_entry.hotkey}")
+            bt.logging.debug(f"Miner model: {miner_entry.model_id.namespace} / {miner_entry.model_id.name}")
+        else:
+            bt.logging.debug(f"No model found for hotkey: {self.metagraph.hotkeys[uid]}")
+
     # bt.logging.info(bt.metagraph.axons)
 
     # for uid in all_uids:
@@ -51,5 +82,5 @@ async def forward(self):
 
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
     self.update_scores(rewards, all_uids)
-    self.set_weights()
+    # self.set_weights()
     time.sleep(30)

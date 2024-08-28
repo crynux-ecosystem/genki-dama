@@ -11,7 +11,7 @@ SHA256_BASE_64_LENGTH = 44
 MAX_COMPETITION_ID_LENGTH = 2
 
 
-class ModelId(BaseModel):
+class CreativeModel(BaseModel):
     """Uniquely identifies a trained model"""
 
     MAX_REPO_ID_LENGTH: ClassVar[int] = (
@@ -34,7 +34,7 @@ class ModelId(BaseModel):
         return f"{self.namespace}:{self.name}:{self.commit}:{self.hash}:{self.competition_id}"
 
     @classmethod
-    def from_compressed_str(cls, cs: str) -> Type["ModelId"]:
+    def from_compressed_str(cls, cs: str) -> Type["CreativeModel"]:
         """Returns an instance of this class from a compressed string representation"""
         tokens = cs.split(":")
         return cls(
@@ -46,16 +46,6 @@ class ModelId(BaseModel):
         )
 
 
-class Model(BaseModel):
-    """Represents a pre trained foundation model."""
-
-    class Config:
-        arbitrary_types_allowed = True
-
-    id: ModelId = Field(description="Identifier for this model.")
-    local_repo_dir: str = Field(description="Local repository with the required files.")
-
-
-class ModelMetadata(BaseModel):
-    id: ModelId = Field(description="Identifier for this trained model.")
+class OnChainModel(BaseModel):
+    creative_model: CreativeModel = Field(description="creative model.")
     block: PositiveInt = Field(description="Block on which this model was claimed on the chain.")

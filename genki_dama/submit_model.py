@@ -2,10 +2,10 @@ import asyncio
 import os
 import argparse
 import constants
+from genki_dama.model.creative_model import CreativeModel
 from model.storage.hugging_face.hugging_face_model_store import HuggingFaceModelStore
 from model.model_updater import ModelUpdater
 import bittensor as bt
-from model.data import Model, ModelId
 from model.storage.chain.chain_model_metadata_store import ChainModelMetadataStore
 from huggingface_hub import update_repo_visibility
 from utils.hf import validate_hf_repo_id
@@ -124,7 +124,7 @@ async def main(config: bt.config):
         raise RuntimeError(f"Could not get competition parameters for competition id: {config.competition_id}")
 
     repo_namespace, repo_name = validate_hf_repo_id(config.hf_repo_id)
-    model_id = ModelId(
+    creative_model = CreativeModel(
         namespace=repo_namespace,
         name=repo_name,
         competition_id=config.competition_id,
@@ -133,37 +133,36 @@ async def main(config: bt.config):
     )
 
     if not config.skip_model_upload:
-        model = Model(id=model_id, local_repo_dir=config.model_dir)
 
         check_model_dir(config.model_dir)
 
         remote_model_store = HuggingFaceModelStore()
 
-        bt.logging.info(f"Uploading model to Huggingface with id {model_id}")
+        bt.logging.info(f"Uploading model to Huggingface: {creative_model}")
 
-        model_id_with_commit = await remote_model_store.upload_model(
-            model=model,
-            competition_parameters=parameters,
+        creative_model_with_commit = await remote_model_store.upload_model(
+            model=creative_model,
+            local_repo_dir=config.model_dir
         )
 
     else:
         # get the latest commit id of hf repo
-        model_id_with_commit = model_id
+        creative_model_with_commit = creative_model
         if config.model_commit_id is None or config.model_commit_id == "":
             raise ValueError("model_commit_id should not be set when skip_model_upload is set to True")
 
-        model_id_with_commit.commit = config.model_commit_id
+        creative_model_with_commit.commit = config.model_commit_id
 
-    model_id_with_hash = ModelId(
+    creative_model_with_hash = CreativeModel(
         namespace=repo_namespace,
         name=repo_name,
         hash=str(regenerate_hash(repo_namespace, repo_name, config.competition_id)),
-        commit=model_id_with_commit.commit,
+        commit=creative_model_with_commit.commit,
         competition_id=config.competition_id,
     )
 
     bt.logging.info(
-        f"Model uploaded to Hugging Face with commit {model_id_with_hash.commit} and hash {model_id_with_hash.hash}"
+        f"Model uploaded to Hugging Face with commit {creative_model_with_hash.commit} and hash {creative_model_with_hash.hash}"
     )
 
     model_metadata_store = ChainModelMetadataStore(subtensor=subtensor, wallet=wallet, subnet_uid=config.netuid)
@@ -172,11 +171,11 @@ async def main(config: bt.config):
     while True:
         try:
             update_repo_visibility(
-                model_id.namespace + "/" + model_id.name,
+                creative_model.namespace + "/" + creative_model.name,
                 private=False,
                 token=os.getenv("HF_ACCESS_TOKEN"),
             )
-            await model_metadata_store.store_model_metadata(wallet.hotkey.ss58_address, model_id_with_hash)
+            await model_metadata_store.store_model_metadata(wallet.hotkey.ss58_address, creative_model_with_hash)
             bt.logging.success("Committed model to the chain.")
             break
         except Exception as e:

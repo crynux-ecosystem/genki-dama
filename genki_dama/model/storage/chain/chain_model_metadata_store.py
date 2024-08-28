@@ -2,7 +2,7 @@ import asyncio
 import functools
 import bittensor as bt
 import os
-from model.data import ModelId, ModelMetadata
+from genki_dama.model.creative_model import CreativeModel, OnChainModel
 from model.storage.model_metadata_store import ModelMetadataStore
 from typing import Optional
 
@@ -22,7 +22,7 @@ class ChainModelMetadataStore(ModelMetadataStore):
         self.wallet = wallet  # Wallet is only needed to write to the chain, not to read.
         self.subnet_uid = subnet_uid
 
-    async def store_model_metadata(self, hotkey: str, model_id: ModelId):
+    async def store_model_metadata(self, hotkey: str, creative_model: CreativeModel):
         """Stores model metadata on this subnet for a specific wallet."""
         if self.wallet is None:
             raise ValueError("No wallet available to write to the chain.")
@@ -32,11 +32,11 @@ class ChainModelMetadataStore(ModelMetadataStore):
             self.subtensor.commit,
             self.wallet,
             self.subnet_uid,
-            model_id.to_compressed_str(),
+            creative_model.to_compressed_str(),
         )
         run_in_subprocess(partial, 60)
 
-    async def retrieve_model_metadata(self, hotkey: str) -> Optional[ModelMetadata]:
+    async def retrieve_model_metadata(self, hotkey: str) -> Optional[OnChainModel]:
         """Retrieves model metadata on this subnet for specific hotkey"""
 
         # Wrap calls to the subtensor in a subprocess with a timeout to handle potential hangs.
@@ -52,23 +52,23 @@ class ChainModelMetadataStore(ModelMetadataStore):
 
         chain_str = bytes.fromhex(hex_data).decode()
 
-        model_id = None
+        creative_model = None
 
         try:
-            model_id = ModelId.from_compressed_str(chain_str)
+            creative_model = CreativeModel.from_compressed_str(chain_str)
         except:
             # If the metadata format is not correct on the chain then we return None.
             bt.logging.trace(f"Failed to parse the metadata on the chain for hotkey {hotkey}.")
             return None
 
-        model_metadata = ModelMetadata(id=model_id, block=metadata["block"])
-        return model_metadata
+        onchain_model = OnChainModel(creative_model=creative_model, block=metadata["block"])
+        return onchain_model
 
 
 # Can only commit data every ~20 minutes.
 async def test_store_model_metadata():
     """Verifies that the ChainModelMetadataStore can store data on the chain."""
-    model_id = ModelId(namespace="TestPath", name="TestModel", hash="TestHash1", commit="1.0")
+    creative_model = CreativeModel(namespace="TestPath", name="TestModel", hash="TestHash1", commit="1.0")
 
     # Use a different subnet that does not leverage chain storage to avoid conflicts.
     # TODO switch to a mocked version when it supports commits.
@@ -84,14 +84,14 @@ async def test_store_model_metadata():
     metadata_store = ChainModelMetadataStore(subtensor=subtensor, wallet=wallet, subnet_uid=net_uid)
 
     # Store the metadata on chain.
-    await metadata_store.store_model_metadata(hotkey=hotkey, model_id=model_id)
+    await metadata_store.store_model_metadata(hotkey=hotkey, creative_model=creative_model)
 
-    print(f"Finished storing {model_id} on the chain.")
+    print(f"Finished storing {creative_model} on the chain.")
 
 
 async def test_retrieve_model_metadata():
     """Verifies that the ChainModelMetadataStore can retrieve data from the chain."""
-    expected_model_id = ModelId(namespace="TestPath", name="TestModel", hash="TestHash1", commit="1.0")
+    expected_creative_model = CreativeModel(namespace="TestPath", name="TestModel", hash="TestHash1", commit="1.0")
 
     # Use a different subnet that does not leverage chain storage to avoid conflicts.
     # TODO switch to a mocked version when it supports commits.
@@ -107,13 +107,13 @@ async def test_retrieve_model_metadata():
     # Retrieve the metadata from the chain.
     model_metadata = await metadata_store.retrieve_model_metadata(hotkey_address)
 
-    print(f"Expecting matching model id: {expected_model_id == model_metadata.id}")
+    print(f"Expecting matching model id: {expected_creative_model == model_metadata.creative_model}")
 
 
 # Can only commit data every ~20 minutes.
 async def test_roundtrip_model_metadata():
     """Verifies that the ChainModelMetadataStore can roundtrip data on the chain."""
-    model_id = ModelId(namespace="TestPath", name="TestModel", hash="TestHash1", commit="1.0")
+    creative_model = CreativeModel(namespace="TestPath", name="TestModel", hash="TestHash1", commit="1.0")
 
     # Use a different subnet that does not leverage chain storage to avoid conflicts.
     # TODO switch to a mocked version when it supports commits.
@@ -129,15 +129,15 @@ async def test_roundtrip_model_metadata():
     metadata_store = ChainModelMetadataStore(subtensor=subtensor, wallet=wallet, subnet_uid=net_uid)
 
     # Store the metadata on chain.
-    await metadata_store.store_model_metadata(hotkey=hotkey, model_id=model_id)
+    await metadata_store.store_model_metadata(hotkey=hotkey, creative_model=creative_model)
 
     # May need to use the underlying publish_metadata function with wait_for_inclusion: True to pass here.
     # Otherwise it defaults to False and we only wait for finalization not necessarily inclusion.
 
     # Retrieve the metadata from the chain.
-    model_metadata = await metadata_store.retrieve_model_metadata(hotkey)
+    onchain_model = await metadata_store.retrieve_model_metadata(hotkey)
 
-    print(f"Expecting matching metadata: {model_id == model_metadata.id}")
+    print(f"Expecting matching metadata: {creative_model == onchain_model.creative_model}")
 
 
 if __name__ == "__main__":
