@@ -40,9 +40,9 @@ class CreativeModel(BaseModel):
         return cls(
             namespace=tokens[0],
             name=tokens[1],
-            commit=tokens[3] if tokens[3] != "None" else None,
-            hash=tokens[4] if tokens[4] != "None" else None,
-            competition_id=(tokens[5] if len(tokens) >= 6 and tokens[5] != "None" else None),
+            commit=tokens[2] if tokens[2] != "None" else None,
+            hash=tokens[3] if tokens[3] != "None" else None,
+            competition_id=(tokens[4] if len(tokens) >= 5 and tokens[4] != "None" else None),
         )
 
 
