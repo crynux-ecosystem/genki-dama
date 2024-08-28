@@ -1,18 +1,17 @@
 import abc
-from model.data import Model, ModelId
+from genki_dama.model.creative_model import CreativeModel
 from constants import CompetitionParameters
-from typing import Optional
 
 
 class RemoteModelStore(abc.ABC):
     """An abstract base class for storing and retrieving a pre trained model."""
 
     @abc.abstractmethod
-    async def upload_model(self, model: Model, parameters: CompetitionParameters) -> ModelId:
+    async def upload_model(self, model: CreativeModel, parameters: CompetitionParameters) -> CreativeModel:
         """Uploads a trained model in the appropriate location based on implementation."""
         pass
 
     @abc.abstractmethod
-    async def download_model(self, model_id: ModelId, local_path: str, parameters: CompetitionParameters) -> Model:
+    async def download_model(self, model_id: CreativeModel, local_path: str, parameters: CompetitionParameters) -> CreativeModel:
         """Retrieves a trained model from the appropriate location and stores at the given path."""
         pass

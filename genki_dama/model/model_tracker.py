@@ -4,7 +4,7 @@ import threading
 from typing import Dict, List, Optional, Set
 import pickle
 import bittensor as bt
-from model.data import ModelMetadata
+from genki_dama.model.creative_model import OnChainModel
 
 
 class ModelTracker:
@@ -17,12 +17,12 @@ class ModelTracker:
         self,
     ):
         # Create a dict from miner hotkey to model metadata.
-        self.miner_hotkey_to_model_metadata_dict: dict[str, ModelMetadata] = dict()
+        self.miner_hotkey_to_model_metadata_dict: dict[str, OnChainModel] = dict()
         # Create a dict from miner hotkey to last time it was evaluated/loaded/updated
         self.miner_hotkey_to_last_touched_dict: dict[str, datetime.datetime] = dict()
 
         # List of overwritten models that may be safe to delete if not curently in use.
-        self.old_model_metadata: list[tuple[str, ModelMetadata]] = []
+        self.old_model_metadata: list[tuple[str, OnChainModel]] = []
         # List of model metadata that are currently in use.
         self.model_metadata_in_use: set[tuple[str, str]] = set()
 
@@ -45,14 +45,14 @@ class ModelTracker:
         with open(filepath, "rb") as f:
             self.miner_hotkey_to_model_metadata_dict = pickle.load(f)
 
-    def get_miner_hotkey_to_model_metadata_dict(self) -> Dict[str, ModelMetadata]:
+    def get_miner_hotkey_to_model_metadata_dict(self) -> Dict[str, OnChainModel]:
         """Returns the mapping from miner hotkey to model metadata."""
 
         # Return a copy to ensure outside code can't modify the scores.
         with self.lock:
             return copy.deepcopy(self.miner_hotkey_to_model_metadata_dict)
 
-    def get_model_metadata_for_miner_hotkey(self, hotkey: str) -> Optional[ModelMetadata]:
+    def get_model_metadata_for_miner_hotkey(self, hotkey: str) -> Optional[OnChainModel]:
         """Returns the model metadata for a given hotkey if any."""
 
         with self.lock:
@@ -60,7 +60,7 @@ class ModelTracker:
                 return self.miner_hotkey_to_model_metadata_dict[hotkey]
             return None
 
-    def take_model_metadata_for_miner_hotkey(self, hotkey: str) -> Optional[ModelMetadata]:
+    def take_model_metadata_for_miner_hotkey(self, hotkey: str) -> Optional[OnChainModel]:
         """Returns the model metadata for a given hotkey if any. Also, marks it as in use to prevent race conditions."""
 
         with self.lock:
@@ -74,7 +74,7 @@ class ModelTracker:
         with self.lock:
             self.model_metadata_in_use.clear()
 
-    def release_model_metadata_for_miner_hotkey(self, hotkey: str, metadata: ModelMetadata):
+    def release_model_metadata_for_miner_hotkey(self, hotkey: str, metadata: OnChainModel):
         with self.lock:
             pair = (hotkey, metadata.id.hash)
             if pair not in self.model_metadata_in_use:
@@ -106,7 +106,7 @@ class ModelTracker:
                 del self.miner_hotkey_to_last_touched_dict[hotkey]
                 bt.logging.trace(f"Removed outdated hotkey timestamp: {hotkey} from ModelTracker")
 
-    def get_and_clear_old_models(self) -> list[tuple[str, ModelMetadata]]:
+    def get_and_clear_old_models(self) -> list[tuple[str, OnChainModel]]:
         with self.lock:
             to_delete = []
             still_in_use = []
@@ -122,7 +122,7 @@ class ModelTracker:
     def on_miner_model_updated(
         self,
         hotkey: str,
-        model_metadata: ModelMetadata,
+        model_metadata: OnChainModel,
     ) -> None:
         """Notifies the tracker that a miner has had their associated model updated.
 
