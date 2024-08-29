@@ -30,6 +30,10 @@ from genki_dama.base.validator import BaseValidatorNeuron
 from genki_dama.utils.uids import check_uid_availability
 from genki_dama.validator import forward
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 class Validator(BaseValidatorNeuron):
     """
     Your validator neuron class. You should use this class to define your validator's behavior. In particular, you should replace the forward function with your own logic.
