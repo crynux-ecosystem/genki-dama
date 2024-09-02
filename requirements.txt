@@ -8,5 +8,5 @@ numpy>=1
 setuptools>=68
 huggingface_hub==0.24.6
 psutil==6.0.0
-wandb==0.17.78
+wandb==0.17.8
 python-dotenv==1.0.1
