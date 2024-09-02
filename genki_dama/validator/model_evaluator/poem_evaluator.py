@@ -2,7 +2,16 @@
 from genki_dama.validator.model_evaluator.api.api import GPTAPI
 from genki_dama.validator.model_evaluator.api.claude_api import ClaudeAPI
 
-GET_EVALUATION_THEME_PROMPT = "Please generate a random theme for writing a poem. The theme should inspire creativity and evoke emotion, suitable for exploring through poetry. Just return the theme, do not return anything else"
+GET_EVALUATION_THEME_PROMPT = '''
+Please generate a random theme for writing a poem.
+The theme should inspire creativity and evoke emotion, suitable for exploring through poetry.
+Just return the theme, do not return anything else
+'''
+
+GET_POEM_PROMPT='''
+Please write a poem using the following theme:
+'''
+
 GET_RESULT_PROMPT = '''
 Please evaluate the following poem based on the following theme. Consider the following aspects:
 1. Depth and authenticity of emotional expression: Does the poem resonate emotionally, capturing complex and nuanced human feelings?
@@ -21,7 +30,10 @@ class PoemEvaluator:
     def generate_evaluation_theme(self) -> str:
         return self.api.get_response(GET_EVALUATION_THEME_PROMPT)
 
-    def evaluate_poem(self, theme: str, poem: str) -> float:
+    def generate_poem_writing_prompt_for_theme(self, theme: str) -> str:
+        return GET_POEM_PROMPT + theme
+
+    def evaluate_poem(self, theme: str, poem: str) -> int:
 
         prompt = GET_RESULT_PROMPT + f"\nThe theme is '{theme}', and the poem is '{poem}'"
         score_txt = self.api.get_response(prompt)

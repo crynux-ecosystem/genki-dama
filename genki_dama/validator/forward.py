@@ -20,12 +20,18 @@
 import time
 from typing import Optional
 import bittensor as bt
+import random
+import numpy as np
 
 from genki_dama.model.creative_model import CreativeModel
 from genki_dama.model.miner_entry import MinerEntry
 from genki_dama.protocol import Dummy
+from genki_dama.validator.model_evaluator.api.claude_api import ClaudeAPI
+from genki_dama.validator.model_evaluator.poem_evaluator import PoemEvaluator
 from genki_dama.validator.reward import get_rewards
 from genki_dama.utils.uids import get_random_uids
+
+from gpt_task.inference import run_task
 
 def get_miner_entry(self, hotkey: str) -> Optional[MinerEntry]:
     try:
@@ -58,28 +64,58 @@ async def forward(self):
     # Log the results for monitoring purposes.
     bt.logging.info(f"All miners: {all_uids}")
 
+    poem_evaluator = PoemEvaluator(ClaudeAPI())
+    miner_scores = []
+
     # Get all the submitted models from the miners.
     for uid in all_uids:
         miner_entry = get_miner_entry(self, self.metagraph.hotkeys[uid])
         if miner_entry is not None:
+            repo_id = f"{miner_entry.creative_model.namespace} / {miner_entry.creative_model.name}"
+
             bt.logging.debug(f"Miner hotkey: {miner_entry.hotkey}")
-            bt.logging.debug(f"Miner model: {miner_entry.creative_model.namespace} / {miner_entry.creative_model.name}")
+            bt.logging.debug(f"Miner repo id: {repo_id}")
             bt.logging.debug(f"Submitted block: {miner_entry.block}")
+
+            # sample_scores = []
+
+            # for i in range(10):
+            #     theme = poem_evaluator.generate_evaluation_theme()
+            #     theme_prompt = poem_evaluator.generate_poem_writing_prompt_for_theme(theme)
+            #     poem = run_inference(repo_id=repo_id, prompt=theme_prompt)
+            #     score = poem_evaluator.evaluate_poem(theme=theme, poem=poem)
+            #     sample_scores[i] = score
+
+            # miner_scores[uid] = int(np.mean(sample_scores))
+
         else:
             bt.logging.debug(f"No model found for hotkey: {self.metagraph.hotkeys[uid]}")
+            miner_scores[uid] = 0
 
-    # bt.logging.info(bt.metagraph.axons)
-
-    # for uid in all_uids:
-    #     hot_key = bt.metagraph.hotkeys[uid]
-    #     bt.logging.info(f"{uid}: {hot_key}")
-
-    # TODO(developer): Define how the validator scores responses.
-    # Adjust the scores based on responses from miners.
-    rewards = [10 if miner_uid == 2 else 1 for miner_uid in all_uids]
-    bt.logging.info(f"Scored responses: {rewards}")
+    bt.logging.info(f"Score for miners: {miner_scores}")
 
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
-    self.update_scores(rewards, all_uids)
+    # self.update_scores(miner_scores, all_uids)
     # self.set_weights()
     time.sleep(30)
+
+async def run_inference(repo_id: str, prompt: str):
+    messages = [
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+
+    seed = random.randint(100000000, 999999999)
+
+    res = run_task(
+        model=repo_id,
+        messages=messages,
+        seed=seed,
+        generation_config={
+            "max_new_tokens": 100
+        }
+    )
+
+    print(res)
