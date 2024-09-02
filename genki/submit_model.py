@@ -2,7 +2,7 @@ import asyncio
 import os
 import argparse
 import constants
-from genki_dama.model.creative_model import CreativeModel
+from genki.model.creative_model import CreativeModel
 from model.storage.hugging_face.hugging_face_model_store import HuggingFaceModelStore
 from model.model_updater import ModelUpdater
 import bittensor as bt

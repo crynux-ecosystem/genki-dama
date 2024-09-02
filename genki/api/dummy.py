@@ -19,7 +19,7 @@
 
 import bittensor as bt
 from typing import List, Optional, Union, Any, Dict
-from genki_dama.protocol import Dummy
+from genki.protocol import Dummy
 from bittensor.subnets import SubnetsAPI
 
 

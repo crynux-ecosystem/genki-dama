@@ -4,7 +4,7 @@ import threading
 from typing import Dict, List, Optional, Set
 import pickle
 import bittensor as bt
-from genki_dama.model.creative_model import OnChainModel
+from genki.model.creative_model import OnChainModel
 
 
 class ModelTracker:

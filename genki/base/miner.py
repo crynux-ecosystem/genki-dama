@@ -23,8 +23,8 @@ import traceback
 
 import bittensor as bt
 
-from genki_dama.base.neuron import BaseNeuron
-from genki_dama.utils.config import add_miner_args
+from genki.base.neuron import BaseNeuron
+from genki.utils.config import add_miner_args
 
 from typing import Union
 

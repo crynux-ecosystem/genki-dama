@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 from pydantic import BaseModel, Field
 import sys
 
-from genki_dama.model.creative_model import CreativeModel
+from genki.model.creative_model import CreativeModel
 
 
 class MinerEntry(BaseModel):

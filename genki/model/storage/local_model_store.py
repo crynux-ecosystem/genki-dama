@@ -1,6 +1,6 @@
 import abc
 from typing import Dict
-from genki_dama.model.creative_model import CreativeModel
+from genki.model.creative_model import CreativeModel
 from constants import CompetitionParameters
 
 

@@ -1,6 +1,6 @@
 import abc
 from typing import Optional
-from genki_dama.model.creative_model import CreativeModel
+from genki.model.creative_model import CreativeModel
 
 
 class ModelMetadataStore(abc.ABC):

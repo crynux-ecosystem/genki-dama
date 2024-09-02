@@ -2,7 +2,7 @@ import bittensor as bt
 from typing import Optional
 from constants import CompetitionParameters, COMPETITION_SCHEDULE
 import constants
-from genki_dama.model.creative_model import OnChainModel
+from genki.model.creative_model import OnChainModel
 from model.model_tracker import ModelTracker
 from model.storage.local_model_store import LocalModelStore
 from model.storage.model_metadata_store import ModelMetadataStore

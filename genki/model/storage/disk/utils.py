@@ -4,7 +4,7 @@ import hashlib
 import os
 import shutil
 import sys
-from genki_dama.model.creative_model import CreativeModel
+from genki.model.creative_model import CreativeModel
 
 
 def get_local_miners_dir(base_dir: str) -> str:

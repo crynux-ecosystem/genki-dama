@@ -28,13 +28,13 @@ import bittensor as bt
 from typing import List, Union
 from traceback import print_exception
 
-from genki_dama.base.neuron import BaseNeuron
-from genki_dama.base.utils.weight_utils import (
+from genki.base.neuron import BaseNeuron
+from genki.base.utils.weight_utils import (
     process_weights_for_netuid,
     convert_weights_and_uids_for_emit,
 )  # TODO: Replace when bittensor switches to numpy
-from genki_dama.mock import MockDendrite
-from genki_dama.utils.config import add_validator_args
+from genki.mock import MockDendrite
+from genki.utils.config import add_validator_args
 
 
 class BaseValidatorNeuron(BaseNeuron):

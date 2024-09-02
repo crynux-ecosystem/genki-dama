@@ -25,10 +25,14 @@ import bittensor as bt
 import numpy as np
 
 # import base validator class which takes care of most of the boilerplate
-from genki_dama.base.validator import BaseValidatorNeuron
+from genki.base.validator import BaseValidatorNeuron
 
-from genki_dama.utils.uids import check_uid_availability
-from genki_dama.validator import forward
+from genki.utils.uids import check_uid_availability
+from genki.validator import forward
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Validator(BaseValidatorNeuron):
     """

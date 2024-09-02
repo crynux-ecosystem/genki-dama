@@ -2,7 +2,7 @@ import asyncio
 import functools
 import bittensor as bt
 import os
-from genki_dama.model.creative_model import CreativeModel, OnChainModel
+from genki.model.creative_model import CreativeModel, OnChainModel
 from model.storage.model_metadata_store import ModelMetadataStore
 from typing import Optional
 

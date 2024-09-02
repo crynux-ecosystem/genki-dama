@@ -1,4 +1,4 @@
-from genki_dama.model.creative_model import CreativeModel
+from genki.model.creative_model import CreativeModel
 from typing import Tuple
 
 def validate_hf_repo_id(repo_id: str) -> Tuple[str, str]:

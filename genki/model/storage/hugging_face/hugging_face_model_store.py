@@ -1,6 +1,6 @@
 import os
 from huggingface_hub import HfApi
-from genki_dama.model.creative_model import CreativeModel
+from genki.model.creative_model import CreativeModel
 from model.storage.disk import utils
 from constants import CompetitionParameters, MAX_HUGGING_FACE_BYTES
 
