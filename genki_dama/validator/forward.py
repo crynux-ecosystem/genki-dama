@@ -22,6 +22,7 @@ from typing import Optional
 import bittensor as bt
 import random
 import numpy as np
+from substrateinterface.utils.ss58 import ss58_encode
 
 from genki_dama.model.creative_model import CreativeModel
 from genki_dama.model.miner_entry import MinerEntry
@@ -53,6 +54,8 @@ def get_miner_entry(self, hotkey: str) -> Optional[MinerEntry]:
 async def forward(self):
     # TODO(developer): Define how the validator selects a miner to query, how often, etc.
     # get_random_uids is an example method, but you can replace it with your own.
+    bt.logging.info("Running forward...")
+
     all_uids = self.metagraph.uids
 
     stake = self.metagraph.S
@@ -69,6 +72,7 @@ async def forward(self):
 
     # Get all the submitted models from the miners.
     for uid in all_uids:
+        print_account_info(self, uid)
         miner_entry = get_miner_entry(self, self.metagraph.hotkeys[uid])
         if miner_entry is not None:
             repo_id = f"{miner_entry.creative_model.namespace} / {miner_entry.creative_model.name}"
@@ -97,7 +101,9 @@ async def forward(self):
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
     # self.update_scores(miner_scores, all_uids)
     # self.set_weights()
+    
     time.sleep(30)
+
 
 async def run_inference(repo_id: str, prompt: str):
     messages = [
@@ -119,3 +125,9 @@ async def run_inference(repo_id: str, prompt: str):
     )
 
     print(res)
+
+
+def print_account_info(self, uid: str):
+    hotkey = self.metagraph.hotkeys[uid]
+    address = ss58_encode(hotkey)
+    print(self.subtensor.get_balance(address))
