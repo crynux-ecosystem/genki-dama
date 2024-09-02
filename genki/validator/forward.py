@@ -23,6 +23,7 @@ import bittensor as bt
 import random
 import numpy as np
 from substrateinterface.utils.ss58 import ss58_encode
+import datetime
 
 from genki.model.creative_model import CreativeModel
 from genki.model.miner_entry import MinerEntry
@@ -67,8 +68,8 @@ async def forward(self):
     # Log the results for monitoring purposes.
     bt.logging.info(f"All miners: {all_uids}")
 
-    poem_evaluator = PoemEvaluator(ClaudeAPI())
-    miner_scores = []
+    # poem_evaluator = PoemEvaluator(ClaudeAPI())
+    miner_scores = [0, 0, 1, 0]
 
     # Get all the submitted models from the miners.
     for uid in all_uids:
@@ -94,7 +95,7 @@ async def forward(self):
 
         else:
             bt.logging.debug(f"No model found for hotkey: {self.metagraph.hotkeys[uid]}")
-            miner_scores[uid] = 0
+            # miner_scores[uid] = 0
 
     bt.logging.info(f"Score for miners: {miner_scores}")
 
@@ -102,7 +103,7 @@ async def forward(self):
     # self.update_scores(miner_scores, all_uids)
     # self.set_weights()
     
-    time.sleep(30)
+    time.sleep(60)
 
 
 async def run_inference(repo_id: str, prompt: str):
@@ -128,6 +129,27 @@ async def run_inference(repo_id: str, prompt: str):
 
 
 def print_account_info(self, uid: str):
+    bt.logging.info(f"Printing account info for uid {uid} to file...")
+    
     hotkey = self.metagraph.hotkeys[uid]
-    address = ss58_encode(hotkey)
-    print(self.subtensor.get_balance(address))
+    hotkey_balance = self.subtensor.get_balance(hotkey)
+
+    coldkey = self.metagraph.coldkeys[uid]
+    coldkey_balance = self.subtensor.get_balance(coldkey)
+
+    stakes = self.metagraph.S
+    weights = self.metagraph.W
+    dividends = self.metagraph.D
+    incentives = self.metagraph.I
+    emmisions = self.metagraph.E
+
+
+    stake = stakes[uid] if len(stakes) > 0 else 0
+    weight = weights[uid] if len(weights) > 0 else 0
+    dividend = dividends[uid] if len(dividends) > 0 else 0
+    incentive = incentives[uid] if len(incentives) > 0 else 0
+    emmision = emmisions[uid] if len(emmisions) > 0 else 0
+
+    with open(f"accounts_data/{uid}.md", "a") as output:
+        current_time = datetime.datetime.now().strftime("%B %d, %Y %I:%M%p")
+        output.write(f"| {current_time} | {stake} | {weight} | {dividend} | {incentive} | {emmision} | {hotkey} | {hotkey_balance} | {coldkey} | {coldkey_balance} |\n")
