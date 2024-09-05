@@ -35,6 +35,9 @@ from genki.utils.uids import get_random_uids
 
 from gpt_task.inference import run_task
 
+
+validator_iter_num = 0
+
 def get_miner_entry(self, hotkey: str) -> Optional[MinerEntry]:
     try:
         metadata = bt.extrinsics.serving.get_metadata(self.subtensor, self.config.netuid, hotkey)
@@ -55,6 +58,8 @@ def get_miner_entry(self, hotkey: str) -> Optional[MinerEntry]:
 async def forward(self):
     # TODO(developer): Define how the validator selects a miner to query, how often, etc.
     # get_random_uids is an example method, but you can replace it with your own.
+    global validator_iter_num
+
     bt.logging.info("Running forward...")
 
     all_uids = self.metagraph.uids
@@ -69,7 +74,7 @@ async def forward(self):
     bt.logging.info(f"All miners: {all_uids}")
 
     # poem_evaluator = PoemEvaluator(ClaudeAPI())
-    miner_scores = [0, 0, 1, 0]
+    miner_scores = [1, 1, 10, 1]
 
     # Get all the submitted models from the miners.
     for uid in all_uids:
@@ -100,9 +105,12 @@ async def forward(self):
     bt.logging.info(f"Score for miners: {miner_scores}")
 
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
-    # self.update_scores(miner_scores, all_uids)
-    # self.set_weights()
     
+    # if validator_iter_num == 4:
+    #    self.update_scores(miner_scores, all_uids)
+    #    self.set_weights()
+    
+    validator_iter_num += 1
     time.sleep(60)
 
 
@@ -142,7 +150,6 @@ def print_account_info(self, uid: str):
     dividends = self.metagraph.D
     incentives = self.metagraph.I
     emmisions = self.metagraph.E
-
 
     stake = stakes[uid] if len(stakes) > 0 else 0
     weight = weights[uid] if len(weights) > 0 else 0
