@@ -23,6 +23,7 @@ import bittensor as bt
 import random
 import numpy as np
 from substrateinterface.utils.ss58 import ss58_encode
+import datetime
 
 from genki.model.creative_model import CreativeModel
 from genki.model.miner_entry import MinerEntry
@@ -32,7 +33,8 @@ from genki.validator.model_evaluator.poem_evaluator import PoemEvaluator
 from genki.validator.reward import get_rewards
 from genki.utils.uids import get_random_uids
 
-from gpt_task.inference import run_task
+
+validator_iter_num = 0
 
 def get_miner_entry(self, hotkey: str) -> Optional[MinerEntry]:
     try:
@@ -54,6 +56,8 @@ def get_miner_entry(self, hotkey: str) -> Optional[MinerEntry]:
 async def forward(self):
     # TODO(developer): Define how the validator selects a miner to query, how often, etc.
     # get_random_uids is an example method, but you can replace it with your own.
+    global validator_iter_num
+
     bt.logging.info("Running forward...")
 
     all_uids = self.metagraph.uids
@@ -67,8 +71,8 @@ async def forward(self):
     # Log the results for monitoring purposes.
     bt.logging.info(f"All miners: {all_uids}")
 
-    poem_evaluator = PoemEvaluator(ClaudeAPI())
-    miner_scores = []
+    # poem_evaluator = PoemEvaluator(ClaudeAPI())
+    miner_scores = [1, 1, 10, 1]
 
     # Get all the submitted models from the miners.
     for uid in all_uids:
@@ -94,40 +98,41 @@ async def forward(self):
 
         else:
             bt.logging.debug(f"No model found for hotkey: {self.metagraph.hotkeys[uid]}")
-            miner_scores[uid] = 0
+            # miner_scores[uid] = 0
 
     bt.logging.info(f"Score for miners: {miner_scores}")
 
     # Update the scores based on the rewards. You may want to define your own update_scores function for custom behavior.
-    # self.update_scores(miner_scores, all_uids)
-    # self.set_weights()
     
-    time.sleep(30)
-
-
-async def run_inference(repo_id: str, prompt: str):
-    messages = [
-        {
-            "role": "user",
-            "content": prompt
-        }
-    ]
-
-    seed = random.randint(100000000, 999999999)
-
-    res = run_task(
-        model=repo_id,
-        messages=messages,
-        seed=seed,
-        generation_config={
-            "max_new_tokens": 100
-        }
-    )
-
-    print(res)
+    # if validator_iter_num == 4:
+    #    self.update_scores(miner_scores, all_uids)
+    #    self.set_weights()
+    
+    validator_iter_num += 1
+    time.sleep(60)
 
 
 def print_account_info(self, uid: str):
+    bt.logging.info(f"Printing account info for uid {uid} to file...")
+    
     hotkey = self.metagraph.hotkeys[uid]
-    address = ss58_encode(hotkey)
-    print(self.subtensor.get_balance(address))
+    hotkey_balance = self.subtensor.get_balance(hotkey)
+
+    coldkey = self.metagraph.coldkeys[uid]
+    coldkey_balance = self.subtensor.get_balance(coldkey)
+
+    stakes = self.metagraph.S
+    weights = self.metagraph.W
+    dividends = self.metagraph.D
+    incentives = self.metagraph.I
+    emmisions = self.metagraph.E
+
+    stake = stakes[uid] if len(stakes) > 0 else 0
+    weight = weights[uid] if len(weights) > 0 else 0
+    dividend = dividends[uid] if len(dividends) > 0 else 0
+    incentive = incentives[uid] if len(incentives) > 0 else 0
+    emmision = emmisions[uid] if len(emmisions) > 0 else 0
+
+    with open(f"accounts_data/{uid}.md", "a") as output:
+        current_time = datetime.datetime.now().strftime("%B %d, %Y %I:%M%p")
+        output.write(f"| {current_time} | {stake} | {weight} | {dividend} | {incentive} | {emmision} | {hotkey} | {hotkey_balance} | {coldkey} | {coldkey_balance} |\n")
