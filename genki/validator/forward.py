@@ -33,8 +33,6 @@ from genki.validator.model_evaluator.poem_evaluator import PoemEvaluator
 from genki.validator.reward import get_rewards
 from genki.utils.uids import get_random_uids
 
-from gpt_task.inference import run_task
-
 
 validator_iter_num = 0
 
@@ -112,28 +110,6 @@ async def forward(self):
     
     validator_iter_num += 1
     time.sleep(60)
-
-
-async def run_inference(repo_id: str, prompt: str):
-    messages = [
-        {
-            "role": "user",
-            "content": prompt
-        }
-    ]
-
-    seed = random.randint(100000000, 999999999)
-
-    res = run_task(
-        model=repo_id,
-        messages=messages,
-        seed=seed,
-        generation_config={
-            "max_new_tokens": 100
-        }
-    )
-
-    print(res)
 
 
 def print_account_info(self, uid: str):
