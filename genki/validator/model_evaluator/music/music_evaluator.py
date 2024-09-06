@@ -1,6 +1,7 @@
 import random
 import os
 import pandas as pd
+import requests
 from audiocraft.data.audio import audio_write
 from audiocraft.models import MusicGen
 from pathlib import Path
@@ -67,8 +68,23 @@ class MusicEvaluator(object):
             loudness_compressor=True,
         )
 
-    def get_music_quality_score(self, prompt_csv_filename: str, music_folder: str,  text_column: str = "caption") -> float:
-        return 1.0
+    def get_music_quality_score(self, prompt_csv_filename: str, music_folder: str,  text_column: str = "caption") -> tuple[float, float]:
+        query_params = {
+            'csv_file': prompt_csv_filename,
+            'music_folder': music_folder,
+            'text_column': text_column
+        }
+
+        response = requests.get("http://127.0.0.1:5000/clap", params=query_params)
+
+        if response.status_code != 200:
+            print(f"request failed to get clap scores: {response.status_code}")
+            raise Exception(f"request failed to get clap scores: {response.status_code}")
+        
+        response_json = response.json()
+
+        return response_json["mean"], response_json["std"]
+
         
     def get_music_style_score(self, music_filename: str) -> float:
         return 1.0
@@ -84,6 +100,8 @@ if __name__ == "__main__":
     prompts_file = eval_folder / "prompts.csv"
     music_folder = eval_folder / "musics"
     
+    ft_music_folder = music_folder / "ft"
+    original_music_folder = music_folder / "original"
 
     print("generating prompts...")
 
@@ -95,21 +113,31 @@ if __name__ == "__main__":
     df = pd.read_csv(prompts_file)
     text_data = df["caption"].tolist()
 
-    evaluator = MusicEvaluator(model_id="iwehf/my_musicgen")
+    evaluator_ft = MusicEvaluator(model_id="iwehf/my_musicgen")
+    evaluator_original = MusicEvaluator(model_id="facebook/musicgen-small")
 
     print("generating musics...")
 
     i = 0
     for prompt in text_data:
-        
-        print(f"{i+1} / {len(text_data)}")
 
-        evaluator.text_2_music(
+        evaluator_ft.text_2_music(
             prompt,
-            os.path.join(music_folder, f"music_{i}")
+            os.path.join(ft_music_folder, f"music_{i}")
         )
 
+        evaluator_original.text_2_music(
+            prompt,
+            os.path.join(original_music_folder, f"music_{i}")
+        )
+
+        print(f"{i+1} / {len(text_data)}")
         i+=1
 
-    print("music quality score: ")
-    print(evaluator.get_music_quality_score(prompts_file, music_folder))
+
+    print("ft model quality score: ")
+    print(evaluator_ft.get_music_quality_score(prompts_file, ft_music_folder))
+
+    print("original model quality score: ")
+    print(evaluator_original.get_music_quality_score(prompts_file, original_music_folder))
+
