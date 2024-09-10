@@ -18,3 +18,5 @@
 from . import graph
 from . import mining
 from . import validation
+
+__version__ = "1.0.0"

@@ -18,8 +18,9 @@
                 "--neuron.axon_off",
                 "--logging.debug",
                 "--wandb_project", "ganki-dama-test",
-                "--wandb_entity", "lukewwww"
-            ]
+                "--wandb_entity", "crynux"
+            ],
+            "justMyCode": false
         },
         {
             "name": "Miner Submit Model",
