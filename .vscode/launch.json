@@ -26,16 +26,14 @@
             "name": "Miner Submit Model",
             "type": "debugpy",
             "request": "launch",
-            "program": "./genki_dama/submit_model.py",
+            "program": "./scripts/upload_model.py",
             "console": "integratedTerminal",
             "args": [
                 "--netuid", "1",
                 "--subtensor.chain_endpoint", "ws://13.230.121.53:9946",
                 "--wallet.name", "miner2",
                 "--wallet.hotkey", "default",
-                "--model_dir", "./model",
-                "--competition_id", "d1",
-                "--hf_repo_id", "lukewwww/genki-dama-test",
+                "--hf_repo_id", "iwehf/pokemon_musicgen",
                 "--logging.debug"
             ]
         }

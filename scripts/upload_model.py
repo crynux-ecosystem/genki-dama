@@ -26,7 +26,7 @@ from taoverse.utilities import utils
 from taoverse.utilities.enum_action import IntEnumAction
 
 import constants
-import finetune as ft
+import genki as gk
 from competitions.data import CompetitionId
 
 load_dotenv()  # take environment variables from .env.
@@ -58,7 +58,7 @@ def get_config():
     parser.add_argument(
         "--competition_id",
         type=CompetitionId,
-        default=CompetitionId.SN9_MODEL.value,
+        default=CompetitionId.ChIPTUNE_MUSIC_MODEL.value,
         action=IntEnumAction,
         help="competition to mine for (use --list-competitions to get all competitions)",
     )
@@ -109,8 +109,8 @@ async def main(config: bt.config):
         )
 
     # Load the model from disk and push it to the chain and Hugging Face.
-    model = ft.mining.load_local_model(config.load_model_dir, model_constraints.kwargs)
-    await ft.mining.push(
+    model = gk.mining.load_local_model(config.load_model_dir, model_constraints.kwargs)
+    await gk.mining.push(
         model,
         config.hf_repo_id,
         config.competition_id,

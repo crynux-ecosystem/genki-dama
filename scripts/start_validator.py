@@ -69,6 +69,32 @@ def start_validator_process(pm2_name: str, args: List[str]) -> subprocess.Popen:
     return process
 
 
+def start_score_api() -> subprocess.Popen:
+    log.info("Starting model evaluator api...")
+    process = subprocess.Popen(
+        (
+            "pm2",
+            "start",
+            "./genki/model_evaluator/music/scores/venv/bin/python",
+            "--name",
+            "model_evaluator_api",
+            "--",
+            "./genki/model_evaluator/music/scores/app.py"
+        ),
+        cwd=constants.ROOT_DIR,
+    )
+    process.pm2_name = "model_evaluator_api"
+
+    return process
+
+
+def stop_score_api() -> None:
+    """Stop the validator process"""
+    subprocess.run(
+        ("pm2", "delete", "model_evaluator_api"), cwd=constants.ROOT_DIR, check=True
+    )
+
+
 def stop_validator_process(process: subprocess.Popen) -> None:
     """Stop the validator process"""
     subprocess.run(
@@ -121,6 +147,8 @@ def main(pm2_name: str, args: List[str]) -> None:
     """
 
     validator = start_validator_process(pm2_name, args)
+    start_score_api()
+
     current_version = latest_version = get_version()
     log.info("Current version: %s", current_version)
 
@@ -139,7 +167,11 @@ def main(pm2_name: str, args: List[str]) -> None:
                 upgrade_packages()
 
                 stop_validator_process(validator)
+                stop_score_api()
+
                 validator = start_validator_process(pm2_name, args)
+                start_score_api()
+                
                 current_version = latest_version
 
             time.sleep(UPDATES_CHECK_TIME.total_seconds())
