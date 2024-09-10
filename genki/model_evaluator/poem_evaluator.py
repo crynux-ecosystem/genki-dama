@@ -1,6 +1,6 @@
 
-from genki.validator.model_evaluator.api.api import GPTAPI
-from genki.validator.model_evaluator.api.claude_api import ClaudeAPI
+from genki.model_evaluator.api.api import GPTAPI
+from genki.model_evaluator.api.claude_api import ClaudeAPI
 
 GET_EVALUATION_THEME_PROMPT = '''
 Please generate a random theme for writing a poem.
