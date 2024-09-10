@@ -680,9 +680,6 @@ class Validator:
         
         # General model quality score
         quality_score_per_uid = {muid: None for muid in uids}
-        
-        # Model similarity score
-        similary_score_matrix = np.zeros((len(uids), len(uids)))
 
         load_model_perf = PerfMonitor("Eval: Load model")
         run_inference_perf = PerfMonitor("Eval: Run inference")
@@ -754,20 +751,44 @@ class Validator:
                 f"Computed model quality score for uid {uid_i}: {quality_score_per_uid[uid_i]}"
             )
 
-        for uid_i in uids:
-            for uid_j in uids:
-                if uid_i == uid_j:
-                    continue
-                with compute_similarity_score_perf.sample():
-                    similary_score_matrix[uid_i][uid_j] = MusicEvaluator.compare_music_similarity()
-                    
+        # Model similarity score
+        similary_score_matrix = np.zeros((len(uids), len(uids)))
 
-        # Compute wins and win rates per uid.
-        wins, win_rate = ft.validation.compute_wins(uids, losses_per_uid, uid_to_block)
+        for n_i, uid_i in enumerate(uids):
+            for n_j, uid_j in enumerate(uids):
+                if n_i >= n_j:
+                    continue
+
+                music_folder_i = music_eval_dir / "musics" / f"{uid_i}"
+                music_folder_j = music_eval_dir / "musics" / f"{uid_j}"
+
+                with compute_similarity_score_perf.sample():
+                    similary_score_matrix[n_i][n_j] = MusicEvaluator.compare_music_similarity(
+                        music_folder_i.absolute(), 
+                        music_folder_j.absolute()
+                        )
+
+        bt.logging.trace("Computed similarity matrix for all uids:")
+        bt.logging.trace(similary_score_matrix)
+
+        full_similary_matrix = similary_score_matrix + similary_score_matrix.T
+        full_similary_matrix[full_similary_matrix == 0] = np.nan
+        avg_similary_scores = np.nanmean(full_similary_matrix, axis=1)
+
+        similarity_score_per_uid = {muid: None for muid in uids}
+
+        for i, uid in enumerate(uids):
+            similarity_score_per_uid[uid] = avg_similary_scores[i]
+            bt.logging.trace(f"Computed similarity score for uid {uid}: {similarity_score_per_uid[uid]}")
+
+        final_scores = {muid: None for muid in uids}
+
+        for uid in uids:
+            final_scores[uid] = similarity_score_per_uid[uid] + quality_score_per_uid[uid]
 
         # Compute softmaxed weights based on win rate.
         model_weights = torch.tensor(
-            [win_rate[uid] for uid in uids], dtype=torch.float32
+            [final_scores[uid] for uid in uids], dtype=torch.float32
         )
         step_weights = torch.softmax(model_weights / constants.temperature, dim=0)
 
@@ -804,7 +825,7 @@ class Validator:
                 if tracker_competition_weights[uid].item() >= 0.001
                 else wr
             )
-            for uid, wr in win_rate.items()
+            for uid, wr in final_scores.items()
         }
         with self.pending_uids_to_eval_lock:
             self.uids_to_eval[competition.id] = set(
@@ -818,7 +839,9 @@ class Validator:
 
         # Log the performance of the eval loop.
         bt.logging.debug(load_model_perf.summary_str())
-        bt.logging.debug(compute_loss_perf.summary_str())
+        bt.logging.debug(run_inference_perf.summary_str())
+        bt.logging.debug(compute_quality_score_perf.summary_str())
+        bt.logging.debug(compute_similarity_score_perf.summary_str())
 
         # Log to screen and wandb.
         self.log_step(
@@ -827,12 +850,14 @@ class Validator:
             uid_to_block,
             uid_to_hf,
             self._get_uids_to_competition_ids(),
-            wins,
-            win_rate,
-            losses_per_uid,
+            quality_score_per_uid,
+            similarity_score_per_uid,
+            final_scores,
             tracker_competition_weights,
             load_model_perf,
-            compute_loss_perf,
+            run_inference_perf,
+            compute_quality_score_perf,
+            compute_similarity_score_perf
         )
 
         # Increment the number of completed run steps by 1
@@ -845,12 +870,14 @@ class Validator:
         uid_to_block: typing.Dict[int, int],
         uid_to_hf: typing.Dict[int, str],
         uid_to_competition_id: typing.Dict[int, typing.Optional[CompetitionId]],
-        wins: typing.Dict[int, int],
-        win_rate: typing.Dict[int, float],
-        losses_per_uid: typing.Dict[int, typing.List[float]],
+        quality_scores:  typing.Dict[int, float],
+        similarity_scores: typing.Dict[int, float],
+        final_scores: typing.Dict[int, float],
         competition_weights: torch.Tensor,
         load_model_perf: PerfMonitor,
-        compute_loss_perf: PerfMonitor,
+        run_inference_perf: PerfMonitor,
+        compute_quality_score_perf: PerfMonitor,
+        compute_similarity_score_perf: PerfMonitor,
     ):
         """Logs the results of the step to the console and wandb (if enabled)."""
 
@@ -867,27 +894,17 @@ class Validator:
                 "block": uid_to_block[uid],
                 "hf": uid_to_hf[uid],
                 "competition_id": uid_to_competition_id[uid],
-                "average_loss": (sum(losses_per_uid[uid]) / len(losses_per_uid[uid])),
-                "perplexity": (
-                    float(
-                        torch.exp(
-                            torch.stack(
-                                [torch.Tensor([x]) for x in losses_per_uid[uid]]
-                            ).mean()
-                        )
-                        .float()
-                        .cpu()
-                    )
-                ),
-                "win_rate": win_rate[uid],
-                "win_total": wins[uid],
+                "quality_score": quality_scores[uid],
+                "similarity_score": similarity_scores[uid],
+                "final_score": final_scores[uid],
                 "weight": self.weights[uid].item(),
             }
         table = Table(title="Step", expand=True)
         table.add_column("uid", justify="right", style="cyan", no_wrap=True)
         table.add_column("hf", style="magenta", overflow="fold")
-        table.add_column("average_loss", style="magenta", overflow="fold")
-        table.add_column("win_rate", style="magenta", overflow="fold")
+        table.add_column("quality_score", style="magenta", overflow="fold")
+        table.add_column("similarity_score", style="magenta", overflow="fold")
+        table.add_column("final_score", style="magenta", overflow="fold")
         table.add_column("total_weight", style="magenta", overflow="fold")
         table.add_column("comp_weight", style="magenta", overflow="fold")
         table.add_column("block", style="magenta", overflow="fold", no_wrap=True)
@@ -898,8 +915,9 @@ class Validator:
                 table.add_row(
                     str(uid),
                     str(step_log["uid_data"][str(uid)]["hf"]),
-                    str(round(step_log["uid_data"][str(uid)]["average_loss"], 4)),
-                    str(round(step_log["uid_data"][str(uid)]["win_rate"], 4)),
+                    str(round(step_log["uid_data"][str(uid)]["quality_score"], 4)),
+                    str(round(step_log["uid_data"][str(uid)]["similarity_score"], 4)),
+                    str(round(step_log["uid_data"][str(uid)]["final_score"], 4)),
                     str(round(self.weights[uid].item(), 4)),
                     str(round(competition_weights[uid].item(), 4)),
                     str(step_log["uid_data"][str(uid)]["block"]),
@@ -947,17 +965,14 @@ class Validator:
                 "time": time.time(),
                 "step_competition_id": competition_id,
                 "block": block,
-                "uid_data": {
-                    str(uid): uid_data[str(uid)]["average_loss"] for uid in uids
+                "quality_score_data": {
+                    str(uid): uid_data[str(uid)]["quality_score"] for uid in uids
                 },
-                "perplexity_data": {
-                    str(uid): uid_data[str(uid)]["perplexity"] for uid in uids
+                "similarity_score_data": {
+                    str(uid): uid_data[str(uid)]["similarity_score"] for uid in uids
                 },
-                "win_rate_data": {
-                    str(uid): uid_data[str(uid)]["win_rate"] for uid in uids
-                },
-                "win_total_data": {
-                    str(uid): uid_data[str(uid)]["win_total"] for uid in uids
+                "final_score_data": {
+                    str(uid): uid_data[str(uid)]["final_score"] for uid in uids
                 },
                 "weight_data": {str(uid): self.weights[uid].item() for uid in uids},
                 "competition_weight_data": {
@@ -974,11 +989,23 @@ class Validator:
                     "max": load_model_perf.max(),
                     "P90": load_model_perf.percentile(90),
                 },
-                "compute_model_perf": {
-                    "min": compute_loss_perf.min(),
-                    "median": compute_loss_perf.median(),
-                    "max": compute_loss_perf.max(),
-                    "P90": compute_loss_perf.percentile(90),
+                "run_inference_perf": {
+                    "min": run_inference_perf.min(),
+                    "median": run_inference_perf.median(),
+                    "max": run_inference_perf.max(),
+                    "P90": run_inference_perf.percentile(90),
+                },
+                "compute_quality_score_perf": {
+                    "min": compute_quality_score_perf.min(),
+                    "median": compute_quality_score_perf.median(),
+                    "max": compute_quality_score_perf.max(),
+                    "P90": compute_quality_score_perf.percentile(90),
+                },
+                "compute_similarity_score_perf": {
+                    "min": compute_similarity_score_perf.min(),
+                    "median": compute_similarity_score_perf.median(),
+                    "max": compute_similarity_score_perf.max(),
+                    "P90": compute_similarity_score_perf.percentile(90),
                 },
             }
             bt.logging.trace("Logging to Wandb")
