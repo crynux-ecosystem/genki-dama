@@ -178,6 +178,7 @@ def main(pm2_name: str, args: List[str]) -> None:
 
     finally:
         stop_validator_process(validator)
+        stop_score_api()
 
 
 if __name__ == "__main__":
@@ -193,7 +194,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--pm2_name", default="net9vali", help="Name of the PM2 process."
+        "--pm2_name", default="genki_dama_validator", help="Name of the PM2 process."
     )
 
     flags, extra_args = parser.parse_known_args()

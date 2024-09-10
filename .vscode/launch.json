@@ -8,7 +8,7 @@
             "name": "Validator",
             "type": "debugpy",
             "request": "launch",
-            "program": "./neurons/validator.py",
+            "program": "./scripts/start_validator.py",
             "console": "integratedTerminal",
             "args": [
                 "--netuid", "1",
@@ -18,7 +18,7 @@
                 "--neuron.axon_off",
                 "--logging.debug",
                 "--wandb_project", "ganki-dama-test",
-                "--wandb_entity", "crynux"
+                "--wandb_entity", "crynux",
             ],
             "justMyCode": false
         },

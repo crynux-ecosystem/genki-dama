@@ -171,3 +171,4 @@ testing/
 /genki/model_evaluator/music/scores/models
 /wandb
 /model-store
+/logs

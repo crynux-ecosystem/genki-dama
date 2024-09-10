@@ -5,13 +5,14 @@ from typing import List, Tuple
 import torch
 
 from taoverse.model.competition.data import ( Competition, ModelConstraints )
+from taoverse.model.competition.epsilon import FixedEpsilon
 from competitions.data import CompetitionId
 
 # ---------------------------------
 # Project Constants.
 # ---------------------------------
 
-__version__ = "1.1.0"
+__version__ = "1.0.0"
 version_split = __version__.split(".")
 __spec_version__ = (
     (1000 * int(version_split[0]))
@@ -24,20 +25,10 @@ __spec_version__ = (
 VALIDATOR_STATE_VERSION = 2
 
 # The validator WANDB project.
-WANDB_PROJECT = "finetuning"
-WANDB_ENTITY = "rusticluftig"
+WANDB_PROJECT = "genki-dama"
+WANDB_ENTITY = "crynux"
 # The uid for this subnet.
-SUBNET_UID = 37
-# The uid for the Cortex subnet.
-CORTEX_SUBNET_UID = 18
-# The Cortex.t validator WANDB project and filters
-CORTEX_WANDB_PROJECT = "cortex-t/multi-modality"
-CORTEX_WANDB_TYPE = "validator"
-CORTEX_MAX_UIDS = 256
-CORTEX_MAX_AGE = dt.timedelta(hours=4)
-CORTEX_MIN_SCORE = 0.85
-# Minimum stake to get data from a cortex validator.
-CORTEX_MIN_STAKE = 100_000
+SUBNET_UID = 1
 # Minimum stake to consider a validator when checking for miners with weights.
 WEIGHT_SYNC_VALI_MIN_STAKE = 100_000
 # Minimum percent of weight on a vali for a miner to be considered a top miner.
@@ -64,6 +55,8 @@ COMPETITION_SCHEDULE_BY_BLOCK: List[Tuple[int, List[Competition]]] = [
                     },
                     eval_block_delay=1200,  # ~4 hours.
                     tokenizer="",
+                    max_bytes=1024 * 1024 * 1024 * 20,
+                    epsilon_func=FixedEpsilon(1.0)
                 ),
                 1.0,
             )
