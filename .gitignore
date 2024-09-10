@@ -168,4 +168,4 @@ testing/
 /model
 /accounts_data
 /evaluation
-/genki/validator/model_evaluator/music/scores/models
+/genki/model_evaluator/music/scores/models

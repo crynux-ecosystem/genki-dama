@@ -16,7 +16,9 @@
                 "--wallet.name", "validator2",
                 "--wallet.hotkey", "default",
                 "--neuron.axon_off",
-                "--logging.debug"
+                "--logging.debug",
+                "--wandb_project", "ganki-dama-test",
+                "--wandb_entity", "lukewwww"
             ]
         },
         {

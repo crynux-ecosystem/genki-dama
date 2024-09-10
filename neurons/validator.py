@@ -61,7 +61,7 @@ from transformers import GenerationConfig
 import constants
 import genki as gk
 from competitions.data import CompetitionId
-from genki.validator.model_evaluator.music.music_evaluator import MusicEvaluator
+from genki.model_evaluator.music.music_evaluator import MusicEvaluator
 from neurons import config as neuron_config
 
 load_dotenv()  # take environment variables from .env.
@@ -1099,7 +1099,5 @@ class Validator:
 
 
 if __name__ == "__main__":
-    # Data comes from Subnet 18's wandb project. Make sure we're logged in
     wandb_utils.login()
-
     asyncio.run(Validator().run())
