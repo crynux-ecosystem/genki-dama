@@ -1,5 +1,6 @@
 import random
 import os
+from typing import List
 import pandas as pd
 import requests
 from audiocraft.data.audio import audio_write
@@ -18,15 +19,20 @@ class MusicEvaluator(object):
         self.model = MusicGen.get_pretrained(model_id)
 
     @classmethod
-    def generate_evaluation_prompts(cls, style: str, csv_filename: str, num: int = 10) -> str:
+    def generate_evaluation_prompts(cls, style: str, csv_filename: str, num: int = 10) -> List[str]:
 
         print(f"style: {style}, csv_filename: {csv_filename}, num: {num}")
+
+        prompts = []
 
         with open(csv_filename, "w") as f:
             f.write("caption\n")
             for _ in range(num):
-                f.write(MusicEvaluator._generate_prompt(style) + "\n")
+                prompt = MusicEvaluator._generate_prompt(style)
+                prompts.append(prompt)
+                f.write(f"{prompt}\n")
 
+        return prompts   
 
     @classmethod
     def _generate_prompt(cls, style: str) -> str:
