@@ -1,7 +1,7 @@
 bittensor==6.9.4
 rich>=13
 pytest>=8
-torch>=2
+gradio==3.50.2
 numpy==1.26.4
 setuptools>=68
 huggingface_hub==0.24.6
