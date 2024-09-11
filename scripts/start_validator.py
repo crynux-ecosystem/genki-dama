@@ -72,7 +72,7 @@ def start_validator_process(pm2_name: str, args: List[str]) -> subprocess.Popen:
 
 def start_score_api() -> subprocess.Popen:
     log.info("Starting model evaluator api...")
-    current_dir = Path(__file__).parent()
+    current_dir = Path(__file__).parent
     scores_dir = current_dir / "genki" / "model_evaluator" / "music" / "scores"
 
     process = subprocess.Popen(
