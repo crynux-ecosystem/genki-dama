@@ -23,6 +23,7 @@ from datetime import timedelta
 from shlex import split
 from typing import List
 import constants
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 UPDATES_CHECK_TIME = timedelta(minutes=15)
@@ -71,15 +72,18 @@ def start_validator_process(pm2_name: str, args: List[str]) -> subprocess.Popen:
 
 def start_score_api() -> subprocess.Popen:
     log.info("Starting model evaluator api...")
+    current_dir = Path(__file__).parent
+    scores_dir = current_dir / "genki" / "model_evaluator" / "music" / "scores"
+
     process = subprocess.Popen(
         (
             "pm2",
             "start",
-            "./genki/model_evaluator/music/scores/venv/bin/python",
+            (scores_dir / "venv" / "bin" / "python").absolute,
             "--name",
             "model_evaluator_api",
             "--",
-            "./genki/model_evaluator/music/scores/app.py"
+            (scores_dir / "app.py").absolute
         ),
         cwd=constants.ROOT_DIR,
     )
@@ -171,7 +175,7 @@ def main(pm2_name: str, args: List[str]) -> None:
 
                 validator = start_validator_process(pm2_name, args)
                 start_score_api()
-                
+
                 current_version = latest_version
 
             time.sleep(UPDATES_CHECK_TIME.total_seconds())
