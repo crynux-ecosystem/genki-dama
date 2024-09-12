@@ -91,9 +91,9 @@ The validator wallet must be registered to the subnet, and sufficient TAO must b
 
 ### Prepare WanDB and Huggingface access tokens
 
-WanDB is used to record the execution logs of the node. Please create a project on WanDB, and prepare the API access token for later usage.
+[WanDB](https://wandb.ai/) is used to record the execution logs of the node. Please create a project on WanDB, and prepare the API access token for later usage.
 
-Huggingface API access token is used to download the models from Huggingface for evaluation. Please get the access token from your Huggingface account for later usage.
+[Huggingface](https://huggingface.co/) API access token is used to download the models from Huggingface for evaluation. Please get the access token from your Huggingface account for later usage.
 
 ### Prepare the code
 
