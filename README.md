@@ -48,9 +48,9 @@ The first Ruby model is a Electronic Chiptune style music model that could be us
 
 The metrics used to evaluate the performance of Ruby are:
 
-* General model quality: [CLAP](https://arxiv.org/abs/2211.06687) score is used to evaluation the music model quality. CLAP uses a pretrained model to transform both the text input and the generated music into the same space, and calculate their distances to see how close they are. Higher score indicates more relevence between the music and the text prompt.
+* General model quality: CLAP[[7]](https://arxiv.org/abs/2211.06687) score is used to evaluation the music model quality. CLAP uses a pretrained model to transform both the text input and the generated music into the same space, and calculate their distances to see how close they are. Higher score indicates more relevence between the music and the text prompt.
 
-* Data diversity: [FAD](https://arxiv.org/abs/1812.08466) is used to measure the diversity of the model outputs
+* Data diversity: FAD[[5]](https://arxiv.org/abs/1812.08466) is used to measure the diversity of the model outputs
 from different miners. Larger diversity on the model outputs, given the same text prompt, indicates larger diversity on the data used to fine-tune the base model.
 
 ## Federated Learning
@@ -90,9 +90,9 @@ When evaluating the performance of finetuned models, the following factors will 
 
 * General model quality: the model quality will be evaludated, such as the quality of the output text/music, the relevance of the output to the input text prompt.
 * Data diversity: validators set higher weights to data with less similarity to encourage miners provide diversified data.
-* Miner contribution: each miner's contribution to the final FL aggregated model will be evaluated, miners with higher contribution will get higher weights. Metrics such as [Shapley Value](https://en.wikipedia.org/wiki/Shapley_value) could be used to evaluate the miner's contribution in a FL model.
+* Miner contribution: each miner's contribution to the final FL aggregated model will be evaluated, miners with higher contribution will get higher weights. Metrics such as [Shapley Value](https://en.wikipedia.org/wiki/Shapley_value)[6] could be used to evaluate the miner's contribution in a FL model.
 
-The metrics varies between Damas. Detailed metrics will be given in the description of each Dama.
+The metrics used may vary between different Damas. Detailed metrics will be given in the description of each Dama.
 
 
 ## Roadmap
@@ -111,7 +111,7 @@ We start with a music model finetuning task for proof-of-concept:
 
 ### Multi-modality Models
 
-Expand the landscape to other modality models: text generation, image generation, etc.
+Expand the landscape to other modality models: text, image, video, etc.
 
 ### Data Markeplace
 
@@ -127,7 +127,7 @@ Genki-Dama will be used to train models in real-world applications.
 
 Validators evaluate the model quality via real traffic of applications. 
 
-Genki-Dama earns license fee from these models.
+Genki-Dama earns license fee from these models, and share with the community.
 
 ## References
 
@@ -142,6 +142,8 @@ Genki-Dama earns license fee from these models.
 [5] Kilgour, Kevin, et al. "Fr\'echet audio distance: A metric for evaluating music enhancement algorithms." arXiv preprint arXiv:1812.08466 (2018).
 
 [6] Wang, Tianhao, et al. "A principled approach to data valuation for federated learning." Federated Learning: Privacy and Incentive (2020): 153-167.
+
+[7] Wu, Yusong, et al. "Large-scale contrastive language-audio pretraining with feature fusion and keyword-to-caption augmentation." ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2023.
 
 
 ## License
