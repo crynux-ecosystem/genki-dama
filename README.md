@@ -23,13 +23,15 @@
 
 ## Introduction
 
-Genki-Dama, inspired by the iconic Dragon Ball technique, is the first open-source machine learning framework that utilizes decentralized data and harnesses decentralized computing resources. Built upon the incentive mechanism of BitTensor, and the computing network of Crynux, Genki-Dama empowers federated learning in a decentralized manner, shattering the limitation of centralized approaches.
+Genki-Dama, inspired by the iconic Dragon Ball technique, is the first open-source machine learning framework that utilizes decentralized data and harnesses decentralized computing resources. Built upon the incentive mechanism of BitTensor, and the computing network of Crynux, Genki-Dama empowers federated learning[1] in a decentralized manner, shattering the limitation of centralized approaches.
 
 The subnet aims to incentivize miners to contribute high quality data and train creative generative models with federated learning.
 
 It includes two parts:
 * Genki: federated learning SDK to utilize BitTensor incentive mechanism and Crynux decentralized computing resources
 * Dama: open-sourced model checkpoints trained by Genki, we will focus on creative generative models
+
+Ruby is the first Dama that's for music generation. We will train a series of Ruby models for different style of music with community's effort to contribute their data and computing power.
 
 ## Federated Learning
 
@@ -49,7 +51,6 @@ Furthermore, as LLM pretraining exhausts public accessible data reservoirs, fede
 
 
 ## Miner
-
 
 Utilizing Crynux decentralized computing layer, miners engage with validators by finetuning on a base model with a customized datasets. The process involves the following steps:
 
@@ -75,20 +76,21 @@ Validators order miners by their commit timestamp, and weight them with the scor
 
 ## Roadmap
 
-### Proof-of-concept
-We start with a simple finetune task for proof-of-concept:
-1. Miners provide high-quality datasets to write like Shakespeare on Tiny-GPT
-2. Validators evaluate generated output on a predefined instruction dataset, and evaluate the data similarity between different miners.
+### Proof of Concept
 
-### Federated Instruction Finetune
+We start with a music model finetuning task for proof-of-concept:
 
-We utilizes Genki-Dama to finetune LLMs that can perform state-of-the-art results on benchmarks.
+1. Miners provide high-quality datasets to fine-tune a music generation model, Ruby, that produces Chiptune style musics for games.
+2. Validators evaluate the quality of the Ruby models according to the metrics defined above, and give higher weights to miners who produced the model with higher scores.
 
-This is the improvement over [Shepherd-7B](https://arxiv.org/pdf/2305.05644)
+### Federated Finetune
+
+1. The validators will produce an aggregated Dama model based on the high-score models submitted by miners.
+2. Shapley value will be calculated for each miner to evaluate its contribution to the aggregated model. Miners with larger contribution will get more weights.
 
 ### Multi-modality Models
 
-Expand the landscape to other modality models: image generation, music generation, etc.
+Expand the landscape to other modality models: text generation, image generation, etc.
 
 ### Data Markeplace
 
@@ -105,6 +107,20 @@ Genki-Dama will be used to train models in real-world applications.
 Validators evaluate the model quality via real traffic of applications. 
 
 Genki-Dama earns license fee from these models.
+
+## References
+
+[1] Konečný, Jakub. "Federated Learning: Strategies for Improving Communication Efficiency." arXiv preprint arXiv:1610.05492 (2016).
+
+[2] Zhang, Jianyi, et al. "Towards building the federatedGPT: Federated instruction tuning." ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2024.
+
+[3] Agostinelli, Andrea, et al. "Musiclm: Generating music from text." arXiv preprint arXiv:2301.11325 (2023).
+
+[4] Copet, Jade, et al. "Simple and controllable music generation." Advances in Neural Information Processing Systems 36 (2024).
+
+[5] Kilgour, Kevin, et al. "Fr\'echet audio distance: A metric for evaluating music enhancement algorithms." arXiv preprint arXiv:1812.08466 (2018).
+
+[6] Wang, Tianhao, et al. "A principled approach to data valuation for federated learning." Federated Learning: Privacy and Incentive (2020): 153-167.
 
 
 ## License
