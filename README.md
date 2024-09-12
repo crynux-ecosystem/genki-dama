@@ -23,7 +23,7 @@
 
 ## Introduction
 
-Genki-Dama, inspired by the iconic Dragon Ball technique, is the first open-source machine learning framework that utilizes decentralized data and harnesses decentralized computing resources. Built upon the incentive mechanism of BitTensor, and the computing network of Crynux, Genki-Dama empowers federated learning in a decentralized manner, shattering the limitation of centralized approaches.
+Genki-Dama, inspired by the iconic Dragon Ball technique, is the first open-source machine learning framework that utilizes decentralized data and harnesses decentralized computing resources. Built upon the incentive mechanism of BitTensor, and the computing network of Crynux, Genki-Dama empowers federated learning[1] in a decentralized manner, shattering the limitation of centralized approaches.
 
 The subnet aims to incentivize miners to contribute high quality data and train creative generative models with federated learning.
 
@@ -108,7 +108,7 @@ Genki-Dama earns license fee from these models.
 
 ## References
 
-[1] McMahan, H. Brendan, et al. "Federated learning: Strategies for improving communication efficiency." Proceedings of the 29th Conference on Neural Information Processing Systems (NIPS), Barcelona, Spain. 2016.
+[1] Konečný, Jakub. "Federated Learning: Strategies for Improving Communication Efficiency." arXiv preprint arXiv:1610.05492 (2016).
 
 [2] Zhang, Jianyi, et al. "Towards building the federatedGPT: Federated instruction tuning." ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2024.
 
