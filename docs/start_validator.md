@@ -64,8 +64,8 @@ Nodejs >= 20 is required. Please install Nodejs according to the official docs:
 
 [Install Node.js](https://nodejs.org/en/download/package-manager)
 
-#### Pm2
-Pm2 is used to manage the validator processes. Install Pm2 using the NPM package manager:
+#### pm2
+pm2 is used to manage the validator processes. Install pm2 using the NPM package manager:
 
 ```bash
 $ npm install -g pm2
