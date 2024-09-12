@@ -40,7 +40,18 @@ It includes two parts:
 * Genki: federated learning SDK to utilize BitTensor incentive mechanism and Crynux decentralized computing resources
 * Dama: open-sourced model checkpoints trained by Genki, we will focus on creative generative models
 
+## Ruby
+
 Ruby is the first Dama that's for music generation. We will train a series of Ruby models for different style of music with community's effort to contribute their data and computing power.
+
+The first Ruby model is a Electronic Chiptune style music model that could be used to generate musics for games.
+
+The metrics used to evaluate the performance of Ruby are:
+
+* General model quality: [CLAP](https://arxiv.org/abs/2211.06687) score is used to evaluation the music model quality. CLAP uses a pretrained model to transform both the text input and the generated music into the same space, and calculate their distances to see how close they are. Higher score indicates more relevence between the music and the text prompt.
+
+* Data diversity: [FAD](https://arxiv.org/abs/1812.08466) is used to measure the diversity of the model outputs
+from different miners. Larger diversity on the model outputs, given the same text prompt, indicates larger diversity on the data used to fine-tune the base model.
 
 ## Federated Learning
 
@@ -75,12 +86,13 @@ Miners can choose whether to share their data:
 
 Validators are responsible for evaluating the performance from each miners, and set weights to each miner.
 
-Although it is difficult to evaluate data quality directly, validators can evaluate the performance of finetuned model, and set weights considering these factors:
-* Model quality: model will be evaluated by cross-validation with other datasets.
-* Data similarity: validators set higher weights to data with less similarity to encourage miners provide diversified data.
-* Shapley value: each data will be calculated to its shapley value as the contribution of data.
+When evaluating the performance of finetuned models, the following factors will be taken into account:
 
-Validators order miners by their commit timestamp, and weight them with the score: (0.95 - data_similarity) * ∆loss * shapley 
+* General model quality: the model quality will be evaludated, such as the quality of the output text/music, the relevance of the output to the input text prompt.
+* Data diversity: validators set higher weights to data with less similarity to encourage miners provide diversified data.
+* Miner contribution: each miner's contribution to the final FL aggregated model will be evaluated, miners with higher contribution will get higher weights. Metrics such as [Shapley Value](https://en.wikipedia.org/wiki/Shapley_value) could be used to evaluate the miner's contribution in a FL model.
+
+The metrics varies between Damas. Detailed metrics will be given in the description of each Dama.
 
 
 ## Roadmap
