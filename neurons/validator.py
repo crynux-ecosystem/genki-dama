@@ -752,28 +752,33 @@ class Validator:
             )
 
         # Model similarity score
-        similary_score_matrix = np.zeros((len(uids), len(uids)))
 
-        for n_i, uid_i in enumerate(uids):
-            for n_j, uid_j in enumerate(uids):
-                if n_i >= n_j:
-                    continue
+        if len(uids) > 1:
+            similary_score_matrix = np.zeros((len(uids), len(uids)))
 
-                music_folder_i = music_eval_dir / "musics" / f"{uid_i}"
-                music_folder_j = music_eval_dir / "musics" / f"{uid_j}"
+            for n_i, uid_i in enumerate(uids):
+                for n_j, uid_j in enumerate(uids):
+                    if n_i >= n_j:
+                        continue
 
-                with compute_similarity_score_perf.sample():
-                    similary_score_matrix[n_i][n_j] = MusicEvaluator.compare_music_similarity(
-                        music_folder_i.absolute(), 
-                        music_folder_j.absolute()
-                        )
+                    music_folder_i = music_eval_dir / "musics" / f"{uid_i}"
+                    music_folder_j = music_eval_dir / "musics" / f"{uid_j}"
 
-        bt.logging.trace("Computed similarity matrix for all uids:")
-        bt.logging.trace(similary_score_matrix)
+                    with compute_similarity_score_perf.sample():
+                        similary_score_matrix[n_i][n_j] = MusicEvaluator.compare_music_similarity(
+                            music_folder_i.absolute(), 
+                            music_folder_j.absolute()
+                            )
 
-        full_similary_matrix = similary_score_matrix + similary_score_matrix.T
-        full_similary_matrix[full_similary_matrix == 0] = np.nan
-        avg_similary_scores = np.nanmean(full_similary_matrix, axis=1)
+            bt.logging.trace("Computed similarity matrix for all uids:")
+            bt.logging.trace(similary_score_matrix)
+
+            full_similary_matrix = similary_score_matrix + similary_score_matrix.T
+            full_similary_matrix[full_similary_matrix == 0] = np.nan
+            avg_similary_scores = np.nanmean(full_similary_matrix, axis=1)
+
+        else:
+            avg_similary_scores = [0]
 
         similarity_score_per_uid = {muid: None for muid in uids}
 
