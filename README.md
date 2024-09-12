@@ -106,6 +106,20 @@ Validators evaluate the model quality via real traffic of applications.
 
 Genki-Dama earns license fee from these models.
 
+## References
+
+[1] McMahan, H. Brendan, et al. "Federated learning: Strategies for improving communication efficiency." Proceedings of the 29th Conference on Neural Information Processing Systems (NIPS), Barcelona, Spain. 2016.
+
+[2] Zhang, Jianyi, et al. "Towards building the federatedGPT: Federated instruction tuning." ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2024.
+
+[3] Agostinelli, Andrea, et al. "Musiclm: Generating music from text." arXiv preprint arXiv:2301.11325 (2023).
+
+[4] Copet, Jade, et al. "Simple and controllable music generation." Advances in Neural Information Processing Systems 36 (2024).
+
+[5] Kilgour, Kevin, et al. "Fr\'echet audio distance: A metric for evaluating music enhancement algorithms." arXiv preprint arXiv:1812.08466 (2018).
+
+[6] Wang, Tianhao, et al. "A principled approach to data valuation for federated learning." Federated Learning: Privacy and Incentive (2020): 153-167.
+
 
 ## License
 This repository is licensed under the MIT License.
