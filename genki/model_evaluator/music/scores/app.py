@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 
 def init_models():
-    model_cache_dir = Path(__file__).parent / "models"
+    model_cache_dir = Path(__file__).parent.parent.parent.parent.parent / "evaluation"  / "scores"
 
     app.config['clap'] = CLAPScore(
         ckpt_dir=model_cache_dir
@@ -40,4 +40,4 @@ def similarity():
 
 if __name__ == "__main__":
     init_models()
-    app.run(debug=True)
+    app.run(debug=False)
