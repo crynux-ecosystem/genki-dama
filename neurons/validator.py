@@ -597,16 +597,6 @@ class Validator:
                 f"Unexpected subnet uid in subnet metagraph syncer: {netuid}"
             )
 
-    def _on_dataset_metagraph_updated(self, metagraph: bt.metagraph, netuid: int):
-        """Processes an update to the metagraph for the dataset subnets."""
-        if netuid == constants.CORTEX_SUBNET_UID:
-            with self.cortex_metagraph:
-                self.cortex_metagraph = copy.deepcopy(metagraph)
-        else:
-            bt.logging.error(
-                f"Unexpected subnet uid in dataset metagraph syncer: {netuid}"
-            )
-
     async def try_run_step(self, ttl: int):
         """Runs a step with ttl in a background process, without raising exceptions if it times out."""
 
