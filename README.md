@@ -31,6 +31,8 @@ It includes two parts:
 * Genki: federated learning SDK to utilize BitTensor incentive mechanism and Crynux decentralized computing resources
 * Dama: open-sourced model checkpoints trained by Genki, we will focus on creative generative models
 
+Ruby is the first Dama that's for music generation. We will train a series of Ruby models for different style of music with community's effort to contribute their data and computing power.
+
 ## Federated Learning
 
 [Federated learning](https://en.wikipedia.org/wiki/Federated_learning) is a machine learning approach designed to harness decentralized data and computing while safeguarding privacy. Its workflow can be summarized as follows:
@@ -49,7 +51,6 @@ Furthermore, as LLM pretraining exhausts public accessible data reservoirs, fede
 
 
 ## Miner
-
 
 Utilizing Crynux decentralized computing layer, miners engage with validators by finetuning on a base model with a customized datasets. The process involves the following steps:
 
@@ -75,20 +76,21 @@ Validators order miners by their commit timestamp, and weight them with the scor
 
 ## Roadmap
 
-### Proof-of-concept
-We start with a simple finetune task for proof-of-concept:
-1. Miners provide high-quality datasets to write like Shakespeare on Tiny-GPT
-2. Validators evaluate generated output on a predefined instruction dataset, and evaluate the data similarity between different miners.
+### Proof of Concept
 
-### Federated Instruction Finetune
+We start with a music model finetuning task for proof-of-concept:
 
-We utilizes Genki-Dama to finetune LLMs that can perform state-of-the-art results on benchmarks.
+1. Miners provide high-quality datasets to fine-tune a music generation model, Ruby, that produces Chiptune style musics for games.
+2. Validators evaluate the quality of the Ruby models according to the metrics defined above, and give higher weights to miners who produced the model with higher scores.
 
-This is the improvement over [Shepherd-7B](https://arxiv.org/pdf/2305.05644)
+### Federated Finetune
+
+1. The validators will produce an aggregated Dama model based on the high-score models submitted by miners.
+2. Shapley value will be calculated for each miner to evaluate its contribution to the aggregated model. Miners with larger contribution will get more weights.
 
 ### Multi-modality Models
 
-Expand the landscape to other modality models: image generation, music generation, etc.
+Expand the landscape to other modality models: text generation, image generation, etc.
 
 ### Data Markeplace
 
