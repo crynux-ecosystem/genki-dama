@@ -11,11 +11,15 @@
 
 </div>
 
-To start a validator node, please follow the tutorial below:
+TL;DR:
+
+Genki-Dama trains a family of generative models for creative contents in a federated manner. Genki is the engineering architecture. Dama is the artifact produced.
+
+**Validator**: To start a validator node, please follow the tutorial below:
 
 [Start a validator node](docs/start_validator.md)
 
-To run a miner and submit your models, please follow the tutorial below:
+**Miner**: To run a miner and submit your models, please follow the tutorial below:
 
 [Run a miner](docs/run_miner.md)
 
@@ -38,7 +42,7 @@ The subnet aims to incentivize miners to contribute high quality data and train 
 
 It includes two parts:
 * Genki: federated learning SDK to utilize BitTensor incentive mechanism and Crynux decentralized computing resources
-* Dama: open-sourced model checkpoints trained by Genki, we will focus on creative generative models
+* Dama: open-sourced model checkpoints trained by Genki, we will focus on generative models for creative contents.
 
 ## Ruby
 
