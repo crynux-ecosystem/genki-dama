@@ -11,6 +11,15 @@
 
 </div>
 
+To start a validator node, please follow the tutorial below:
+
+[Start a validator node](docs/start_validator.md)
+
+To run a miner and submit your models, please follow the tutorial below:
+
+[Run a miner](docs/run_miner.md)
+
+
 ---
 - [Introduction](#introduction)
 - [Federated Learning](#federated-learning)

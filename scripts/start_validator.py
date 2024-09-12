@@ -81,7 +81,7 @@ def start_score_api() -> subprocess.Popen:
             "start",
             (scores_dir / "venv" / "bin" / "python").absolute(),
             "--name",
-            "model_evaluator_api",
+            "gd_score_api",
             "--",
             (scores_dir / "app.py").absolute()
         ),
@@ -95,7 +95,7 @@ def start_score_api() -> subprocess.Popen:
 def stop_score_api() -> None:
     """Stop the validator process"""
     subprocess.run(
-        ("pm2", "delete", "model_evaluator_api"), cwd=constants.ROOT_DIR, check=True
+        ("pm2", "delete", "gd_score_api"), cwd=constants.ROOT_DIR, check=True
     )
 
 
@@ -198,7 +198,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--pm2_name", default="genki_dama_validator", help="Name of the PM2 process."
+        "--pm2_name", default="gd_vali_main", help="Name of the PM2 process."
     )
 
     flags, extra_args = parser.parse_known_args()
