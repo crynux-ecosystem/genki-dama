@@ -111,8 +111,8 @@ class MusicEvaluator(object):
             raise Exception(f"request failed to get similarity scores: {response.status_code}")
 
         response_json = response.json()
-
-        return response_json
+        assert "similarity" in response_json
+        return response_json["similarity"]
 
 
 if __name__ == "__main__":
