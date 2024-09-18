@@ -45,7 +45,7 @@ MODEL_CONSTRAINTS_BY_COMPETITION_ID: Dict[CompetitionId, ModelConstraints] = {
                     sequence_length=4096,
                     allowed_architectures=[],
                     kwargs={
-                        "torch_dtype": torch.bfloat16,
+                        "torch_dtype": torch.float16,
                     },
                     eval_block_delay=1200,  # ~4 hours.
                     tokenizer="",

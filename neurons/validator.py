@@ -45,21 +45,16 @@ from taoverse.model.competition import utils as competition_utils
 from taoverse.model.competition.competition_tracker import CompetitionTracker
 from taoverse.model.data import ModelMetadata
 from taoverse.model.model_tracker import ModelTracker
-from taoverse.model.model_updater import MinerMisconfiguredError, ModelUpdater
+from taoverse.model.model_updater import MinerMisconfiguredError
 from taoverse.model.storage.chain.chain_model_metadata_store import (
     ChainModelMetadataStore,
-)
-from taoverse.model.storage.disk.disk_model_store import DiskModelStore
-from taoverse.model.storage.hugging_face.hugging_face_model_store import (
-    HuggingFaceModelStore,
 )
 from taoverse.utilities import utils
 from taoverse.utilities import wandb as wandb_utils
 from taoverse.utilities.perf_monitor import PerfMonitor
-from transformers import GenerationConfig
 
 import constants
-import genki as gk
+import models
 from competitions.data import CompetitionId
 from genki.model_evaluator.music.music_evaluator import MusicEvaluator
 from neurons import config as neuron_config
@@ -246,13 +241,13 @@ class Validator:
         )
 
         # Setup a RemoteModelStore
-        self.remote_store = HuggingFaceModelStore()
+        self.remote_store = models.RemoteAudioModelStore()
 
         # Setup a LocalModelStore
-        self.local_store = DiskModelStore(base_dir=self.config.model_dir)
+        self.local_store = models.DiskAudioModelStore(base_dir=self.config.model_dir)
 
         # Setup a model updater to download models as needed to match the latest provided miner metadata.
-        self.model_updater = ModelUpdater(
+        self.model_updater = models.AudioModelUpdater(
             metadata_store=self.metadata_store,
             remote_store=self.remote_store,
             local_store=self.local_store,
