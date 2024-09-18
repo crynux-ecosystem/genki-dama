@@ -991,13 +991,14 @@ class Validator:
                     "max": compute_quality_score_perf.max(),
                     "P90": compute_quality_score_perf.percentile(90),
                 },
-                "compute_similarity_score_perf": {
+            }
+            if len(compute_similarity_score_perf.samples) > 0:
+                graphed_data["compute_similarity_score_perf"] = {
                     "min": compute_similarity_score_perf.min(),
                     "median": compute_similarity_score_perf.median(),
                     "max": compute_similarity_score_perf.max(),
                     "P90": compute_similarity_score_perf.percentile(90),
-                },
-            }
+                }
             bt.logging.trace("Logging to Wandb")
             self.wandb_run.log(
                 {**graphed_data, "original_format_json": original_format_json},
