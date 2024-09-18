@@ -121,21 +121,10 @@ We start with a music model finetuning task for proof-of-concept:
 
 Expand the landscape to other modality models: text, image, video, etc.
 
-### Data Markeplace
-
-Miners optionally choose whether to share their data. Data quality is measured by the model trained from these data.
-
-Clients can buy data from the marketplace.
-
-Genki-Dama earns fees from these transactions.
-
 ### Model for Applications
 
-Genki-Dama will be used to train models in real-world applications.
-
-Validators evaluate the model quality via real traffic of applications. 
-
-Genki-Dama earns license fee from these models, and share with the community.
+Models developed on the subnet will be hosted on the Crynux Network, offering services across all applications.
+Validators and miners who contributed to these models on the subnet will share ongoing rewards from the payments of the models' usage.
 
 ## References
 
