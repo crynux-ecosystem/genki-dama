@@ -7,7 +7,7 @@ from audiocraft.data.audio import audio_write
 from audiocraft.models import MusicGen
 from pathlib import Path
 
-from genki.model_evaluator.music.music_labels import mood_theme_classes, instrument_classes
+from genki.music_labels import mood_theme_classes, instrument_classes
 
 score_endpoint = "http://127.0.0.1:5000"
 
