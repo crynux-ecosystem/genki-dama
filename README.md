@@ -54,6 +54,10 @@ Ruby is the first Dama that's for music generation. We will train a series of Ru
 
 The first Ruby model is a Electronic Chiptune style music model that could be used to generate musics for games.
 
+A demo video of fine-tuning such a model, and using it to generate music is given in the X:
+
+[Fine-tuning & inference of the music generation model](https://x.com/crynuxai/status/1834032564266533183)
+
 The metrics used to evaluate the performance of Ruby are:
 
 * General model quality: CLAP[[7]](https://arxiv.org/abs/2211.06687) score is used to evaluation the music model quality. CLAP uses a pretrained model to transform both the text input and the generated music into the same space, and calculate their distances to see how close they are. Higher score indicates more relevence between the music and the text prompt.
