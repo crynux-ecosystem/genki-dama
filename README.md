@@ -15,6 +15,10 @@ TL;DR:
 
 Genki-Dama trains a family of generative models for creative contents in a federated manner. Genki is the engineering architecture. Dama is the artifact produced.
 
+For a comprehensive introduction of the subnet, please refer to the blog post:
+
+[[Bittensor x Crynux] Creative Content Revolution: the Federated Fine-tuning Subnet](https://blog.crynux.ai/bittensor-x-crynux-creative-content-revolution-the-federated-fine-tuning-subnet/)
+
 **Validator**: To start a validator node, please follow the tutorial below:
 
 [Start a validator node](docs/start_validator.md)
