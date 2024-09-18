@@ -24,20 +24,15 @@ from typing import Any, Dict, Optional
 import bittensor as bt
 import huggingface_hub
 from taoverse.model import utils as model_utils
-from taoverse.model.data import Model, ModelId
-from taoverse.model.storage.chain.chain_model_metadata_store import (
-    ChainModelMetadataStore,
-)
-from taoverse.model.storage.hugging_face.hugging_face_model_store import (
-    HuggingFaceModelStore,
-)
+from taoverse.model.data import ModelId
+from taoverse.model.storage.chain.chain_model_metadata_store import \
+    ChainModelMetadataStore
 from taoverse.model.storage.model_metadata_store import ModelMetadataStore
-from taoverse.model.storage.remote_model_store import RemoteModelStore
 from taoverse.model.utils import get_hash_of_two_strings
-from transformers import AutoModelForCausalLM, PreTrainedModel
 
 import constants
 import genki as ft
+import models
 from competitions.data import CompetitionId
 
 
@@ -49,14 +44,14 @@ def model_path(base_dir: str, run_id: str) -> str:
 
 
 async def push(
-    model: PreTrainedModel,
+    model: models.AudioCraftModel,
     repo: str,
     competition_id: CompetitionId,
     wallet: bt.wallet,
     retry_delay_secs: int = 60,
     update_repo_visibility: bool = False,
     metadata_store: Optional[ModelMetadataStore] = None,
-    remote_model_store: Optional[RemoteModelStore] = None,
+    remote_model_store: Optional[models.RemoteAudioModelStore] = None,
 ):
     """Pushes the model to Hugging Face and publishes it on the chain for evaluation by validators.
 
@@ -79,7 +74,7 @@ async def push(
         )
 
     if remote_model_store is None:
-        remote_model_store = HuggingFaceModelStore()
+        remote_model_store = models.RemoteAudioModelStore()
 
     model_constraints = constants.MODEL_CONSTRAINTS_BY_COMPETITION_ID.get(
         competition_id, None
@@ -91,7 +86,7 @@ async def push(
     namespace, name = model_utils.validate_hf_repo_id(repo)
     model_id = ModelId(namespace=namespace, name=name, competition_id=competition_id)
     model_id = await remote_model_store.upload_model(
-        Model(id=model_id, pt_model=model), model_constraints
+        models.AudioModel(id=model_id, model=model), model_constraints
     )
 
     bt.logging.success("Uploaded model to hugging face.")
@@ -142,12 +137,12 @@ async def push(
         huggingface_hub.update_repo_visibility(
             repo,
             private=False,
-            token=HuggingFaceModelStore.assert_access_token_exists(),
+            token=remote_model_store.assert_access_token_exists(),
         )
         bt.logging.success("Model set to public")
 
 
-def save(model: PreTrainedModel, model_dir: str):
+def save(model: models.AudioCraftModel, model_dir: str):
     """Saves a model to the provided directory"""
     if not os.path.exists(model_dir):
         os.makedirs(model_dir, exist_ok=True)
@@ -155,7 +150,6 @@ def save(model: PreTrainedModel, model_dir: str):
     # Save the model state to the specified path.
     model.save_pretrained(
         save_directory=model_dir,
-        safe_serialization=True,
     )
 
 
@@ -181,14 +175,9 @@ async def get_repo(
     return model_utils.get_hf_url(model_metadata)
 
 
-def load_local_model(model_dir: str, kwargs: Dict[str, Any]) -> PreTrainedModel:
+def load_local_model(model_dir: str, kwargs: Dict[str, Any]):
     """Loads a model from a directory."""
-    return AutoModelForCausalLM.from_pretrained(
-        pretrained_model_name_or_path=model_dir,
-        local_files_only=True,
-        use_safetensors=True,
-        **kwargs,
-    )
+    return models.AudioCraftModel.from_pretrained(model_dir, **kwargs)
 
 
 async def load_remote_model(
@@ -196,8 +185,8 @@ async def load_remote_model(
     download_dir: str,
     metagraph: Optional[bt.metagraph] = None,
     metadata_store: Optional[ModelMetadataStore] = None,
-    remote_model_store: Optional[RemoteModelStore] = None,
-) -> PreTrainedModel:
+    remote_model_store: Optional[models.RemoteAudioModelStore] = None,
+) -> models.AudioCraftModel:
     """Loads the model currently being advertised by the Miner with the given UID.
 
     Args:
@@ -217,7 +206,7 @@ async def load_remote_model(
         )
 
     if remote_model_store is None:
-        remote_model_store = HuggingFaceModelStore()
+        remote_model_store = models.RemoteAudioModelStore()
 
     hotkey = metagraph.hotkeys[uid]
     model_metadata = await metadata_store.retrieve_model_metadata(hotkey)
@@ -225,17 +214,17 @@ async def load_remote_model(
         raise ValueError(f"No model metadata found for miner {uid}")
 
     model_constraints = constants.MODEL_CONSTRAINTS_BY_COMPETITION_ID.get(
-        model_metadata.id.competition_id, None
+        model_metadata.id.competition_id
     )
 
     if not model_constraints:
         raise ValueError("Invalid competition_id")
 
     bt.logging.success(f"Fetched model metadata: {model_metadata}")
-    model: Model = await remote_model_store.download_model(
+    model = await remote_model_store.download_model(
         model_metadata.id, download_dir, model_constraints
     )
-    return model.pt_model
+    return model.model
 
 
 async def load_best_model(
@@ -243,8 +232,8 @@ async def load_best_model(
     competition_id: CompetitionId,
     metagraph: Optional[bt.metagraph] = None,
     metadata_store: Optional[ModelMetadataStore] = None,
-    remote_model_store: Optional[RemoteModelStore] = None,
-) -> PreTrainedModel:
+    remote_model_store: Optional[models.RemoteAudioModelStore] = None,
+) -> models.AudioCraftModel:
     """Loads the model from the best performing miner to download_dir"""
     best_uid = ft.graph.best_uid(competition_id=competition_id)
     if best_uid is None:

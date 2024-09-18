@@ -45,21 +45,16 @@ from taoverse.model.competition import utils as competition_utils
 from taoverse.model.competition.competition_tracker import CompetitionTracker
 from taoverse.model.data import ModelMetadata
 from taoverse.model.model_tracker import ModelTracker
-from taoverse.model.model_updater import MinerMisconfiguredError, ModelUpdater
+from taoverse.model.model_updater import MinerMisconfiguredError
 from taoverse.model.storage.chain.chain_model_metadata_store import (
     ChainModelMetadataStore,
-)
-from taoverse.model.storage.disk.disk_model_store import DiskModelStore
-from taoverse.model.storage.hugging_face.hugging_face_model_store import (
-    HuggingFaceModelStore,
 )
 from taoverse.utilities import utils
 from taoverse.utilities import wandb as wandb_utils
 from taoverse.utilities.perf_monitor import PerfMonitor
-from transformers import GenerationConfig
 
 import constants
-import genki as gk
+import models
 from competitions.data import CompetitionId
 from genki.model_evaluator.music.music_evaluator import MusicEvaluator
 from neurons import config as neuron_config
@@ -246,13 +241,13 @@ class Validator:
         )
 
         # Setup a RemoteModelStore
-        self.remote_store = HuggingFaceModelStore()
+        self.remote_store = models.RemoteAudioModelStore()
 
         # Setup a LocalModelStore
-        self.local_store = DiskModelStore(base_dir=self.config.model_dir)
+        self.local_store = models.DiskAudioModelStore(base_dir=self.config.model_dir)
 
         # Setup a model updater to download models as needed to match the latest provided miner metadata.
-        self.model_updater = ModelUpdater(
+        self.model_updater = models.AudioModelUpdater(
             metadata_store=self.metadata_store,
             remote_store=self.remote_store,
             local_store=self.local_store,
@@ -597,16 +592,6 @@ class Validator:
                 f"Unexpected subnet uid in subnet metagraph syncer: {netuid}"
             )
 
-    def _on_dataset_metagraph_updated(self, metagraph: bt.metagraph, netuid: int):
-        """Processes an update to the metagraph for the dataset subnets."""
-        if netuid == constants.CORTEX_SUBNET_UID:
-            with self.cortex_metagraph:
-                self.cortex_metagraph = copy.deepcopy(metagraph)
-        else:
-            bt.logging.error(
-                f"Unexpected subnet uid in dataset metagraph syncer: {netuid}"
-            )
-
     async def try_run_step(self, ttl: int):
         """Runs a step with ttl in a background process, without raising exceptions if it times out."""
 
@@ -752,28 +737,33 @@ class Validator:
             )
 
         # Model similarity score
-        similary_score_matrix = np.zeros((len(uids), len(uids)))
 
-        for n_i, uid_i in enumerate(uids):
-            for n_j, uid_j in enumerate(uids):
-                if n_i >= n_j:
-                    continue
+        if len(uids) > 1:
+            similary_score_matrix = np.zeros((len(uids), len(uids)))
 
-                music_folder_i = music_eval_dir / "musics" / f"{uid_i}"
-                music_folder_j = music_eval_dir / "musics" / f"{uid_j}"
+            for n_i, uid_i in enumerate(uids):
+                for n_j, uid_j in enumerate(uids):
+                    if n_i >= n_j:
+                        continue
 
-                with compute_similarity_score_perf.sample():
-                    similary_score_matrix[n_i][n_j] = MusicEvaluator.compare_music_similarity(
-                        music_folder_i.absolute(), 
-                        music_folder_j.absolute()
-                        )
+                    music_folder_i = music_eval_dir / "musics" / f"{uid_i}"
+                    music_folder_j = music_eval_dir / "musics" / f"{uid_j}"
 
-        bt.logging.trace("Computed similarity matrix for all uids:")
-        bt.logging.trace(similary_score_matrix)
+                    with compute_similarity_score_perf.sample():
+                        similary_score_matrix[n_i][n_j] = MusicEvaluator.compare_music_similarity(
+                            music_folder_i.absolute(), 
+                            music_folder_j.absolute()
+                            )
 
-        full_similary_matrix = similary_score_matrix + similary_score_matrix.T
-        full_similary_matrix[full_similary_matrix == 0] = np.nan
-        avg_similary_scores = np.nanmean(full_similary_matrix, axis=1)
+            bt.logging.trace("Computed similarity matrix for all uids:")
+            bt.logging.trace(similary_score_matrix)
+
+            full_similary_matrix = similary_score_matrix + similary_score_matrix.T
+            full_similary_matrix[full_similary_matrix == 0] = np.nan
+            avg_similary_scores = np.nanmean(full_similary_matrix, axis=1)
+
+        else:
+            avg_similary_scores = [0]
 
         similarity_score_per_uid = {muid: None for muid in uids}
 
@@ -1001,13 +991,14 @@ class Validator:
                     "max": compute_quality_score_perf.max(),
                     "P90": compute_quality_score_perf.percentile(90),
                 },
-                "compute_similarity_score_perf": {
+            }
+            if len(compute_similarity_score_perf.samples) > 0:
+                graphed_data["compute_similarity_score_perf"] = {
                     "min": compute_similarity_score_perf.min(),
                     "median": compute_similarity_score_perf.median(),
                     "max": compute_similarity_score_perf.max(),
                     "P90": compute_similarity_score_perf.percentile(90),
-                },
-            }
+                }
             bt.logging.trace("Logging to Wandb")
             self.wandb_run.log(
                 {**graphed_data, "original_format_json": original_format_json},

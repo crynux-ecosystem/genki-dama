@@ -7,7 +7,7 @@ from audiocraft.data.audio import audio_write
 from audiocraft.models import MusicGen
 from pathlib import Path
 
-from genki.model_evaluator.music.music_labels import mood_theme_classes, instrument_classes
+from genki.music_labels import mood_theme_classes, instrument_classes
 
 score_endpoint = "http://127.0.0.1:5000"
 
@@ -111,8 +111,8 @@ class MusicEvaluator(object):
             raise Exception(f"request failed to get similarity scores: {response.status_code}")
 
         response_json = response.json()
-
-        return response_json
+        assert "similarity" in response_json
+        return response_json["similarity"]
 
 
 if __name__ == "__main__":

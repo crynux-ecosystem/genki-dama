@@ -1,7 +1,7 @@
 import datetime as dt
 import math
 from pathlib import Path
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 import torch
 
 from taoverse.model.competition.data import ( Competition, ModelConstraints )
@@ -39,6 +39,21 @@ ROOT_DIR = Path(__file__).parent.parent
 # The maximum bytes for the hugging face repo.
 MAX_HUGGING_FACE_BYTES: int = 15 * 1024 * 1024 * 1024
 
+MODEL_CONSTRAINTS_BY_COMPETITION_ID: Dict[CompetitionId, ModelConstraints] = {
+    CompetitionId.ChIPTUNE_MUSIC_MODEL: ModelConstraints(
+                    max_model_parameter_size=6_900_000_000,
+                    sequence_length=4096,
+                    allowed_architectures=[],
+                    kwargs={
+                        "torch_dtype": torch.float16,
+                    },
+                    eval_block_delay=1200,  # ~4 hours.
+                    tokenizer="",
+                    max_bytes=1024 * 1024 * 1024 * 20,
+                    epsilon_func=FixedEpsilon(1.0)
+                ),
+}
+
 # Schedule of competitions by block.
 COMPETITION_SCHEDULE_BY_BLOCK: List[Tuple[int, List[Competition]]] = [
     (
@@ -46,18 +61,7 @@ COMPETITION_SCHEDULE_BY_BLOCK: List[Tuple[int, List[Competition]]] = [
         [
             Competition(
                 CompetitionId.ChIPTUNE_MUSIC_MODEL,
-                ModelConstraints(
-                    max_model_parameter_size=6_900_000_000,
-                    sequence_length=4096,
-                    allowed_architectures=[],
-                    kwargs={
-                        "torch_dtype": torch.bfloat16,
-                    },
-                    eval_block_delay=1200,  # ~4 hours.
-                    tokenizer="",
-                    max_bytes=1024 * 1024 * 1024 * 20,
-                    epsilon_func=FixedEpsilon(1.0)
-                ),
+                MODEL_CONSTRAINTS_BY_COMPETITION_ID[CompetitionId.ChIPTUNE_MUSIC_MODEL],
                 1.0,
             )
         ],
