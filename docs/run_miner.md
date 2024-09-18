@@ -2,6 +2,24 @@
 
 Fine-tune the creative model and submit it to the subnet for rewards.
 
+## Install dependencies
+
+First of all, you should install dependencies to run the following steps.
+
+
+(Optional) It is recommended to create a new virtual environment to install dependencies.
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+Using this command to install all dependencies:
+
+```bash
+pip install -r requirements.txt && pip install .
+```
+
 ## Prepare dataset
 
 The dataset for finetuning are audio files. You should put all your training audio files in a single directory.
