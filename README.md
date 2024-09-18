@@ -3,8 +3,8 @@
 # **Genki-Dama (元気玉)**
 ## Federated Learning subnet on BitTensor, powered by Crynux  <!-- omit in toc -->
 
-
-[![Discord Chat](https://img.shields.io/discord/308323056592486420.svg)]([https://discord.gg/bittensor](https://discord.gg/vJZnq4ujvK))
+[![X](https://img.shields.io/badge/@crynuxai-%23000000.svg?style=for-the-badge&logo=X&logoColor=white)](https://x.com/crynuxai)
+[![Discord Chat](https://img.shields.io/discord/308323056592486420.svg)](https://discord.gg/JPpN4RNdqA)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
 ![Genki-Dama](genki.gif)
