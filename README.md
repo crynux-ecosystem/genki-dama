@@ -3,8 +3,8 @@
 # **Genki-Dama (元気玉)**
 ## Federated Learning subnet on BitTensor, powered by Crynux  <!-- omit in toc -->
 
-
-[![Discord Chat](https://img.shields.io/discord/308323056592486420.svg)]([https://discord.gg/bittensor](https://discord.gg/vJZnq4ujvK))
+[![X](https://img.shields.io/badge/@crynuxai-%23000000.svg?style=for-the-badge&logo=X&logoColor=white)](https://x.com/crynuxai)
+[![Discord Chat](https://img.shields.io/discord/308323056592486420.svg)](https://discord.gg/JPpN4RNdqA)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
 ![Genki-Dama](genki.gif)
@@ -15,6 +15,10 @@ TL;DR:
 
 Genki-Dama trains a family of generative models for creative contents in a federated manner. Genki is the engineering architecture. Dama is the artifact produced.
 
+For a comprehensive introduction of the subnet, please refer to the blog post:
+
+[[Bittensor x Crynux] Creative Content Revolution: the Federated Fine-tuning Subnet](https://blog.crynux.ai/bittensor-x-crynux-creative-content-revolution-the-federated-fine-tuning-subnet/)
+
 **Validator**: To start a validator node, please follow the tutorial below:
 
 [Start a validator node](docs/start_validator.md)
@@ -23,6 +27,9 @@ Genki-Dama trains a family of generative models for creative contents in a feder
 
 [Run a miner](docs/run_miner.md)
 
+The current state of the models being fine-tuned in the subnet can be visualized in the leaderboard:
+
+[Genki-Dama Subnet Leaderboard](https://huggingface.co/spaces/crynux-ai/genki-dama-leaderboard)
 
 ---
 - [Introduction](#introduction)
@@ -49,6 +56,10 @@ It includes two parts:
 Ruby is the first Dama that's for music generation. We will train a series of Ruby models for different style of music with community's effort to contribute their data and computing power.
 
 The first Ruby model is a Electronic Chiptune style music model that could be used to generate musics for games.
+
+A demo video of fine-tuning such a model, and using it to generate music is given on X:
+
+[Fine-tuning & inference of the music generation model](https://x.com/crynuxai/status/1834032564266533183)
 
 The metrics used to evaluate the performance of Ruby are:
 
@@ -117,21 +128,10 @@ We start with a music model finetuning task for proof-of-concept:
 
 Expand the landscape to other modality models: text, image, video, etc.
 
-### Data Markeplace
-
-Miners optionally choose whether to share their data. Data quality is measured by the model trained from these data.
-
-Clients can buy data from the marketplace.
-
-Genki-Dama earns fees from these transactions.
-
 ### Model for Applications
 
-Genki-Dama will be used to train models in real-world applications.
-
-Validators evaluate the model quality via real traffic of applications. 
-
-Genki-Dama earns license fee from these models, and share with the community.
+Models developed on the subnet will be hosted on the Crynux Network, offering services across all applications.
+Validators and miners who contributed to these models on the subnet will share ongoing rewards from the payments of the models' usage.
 
 ## References
 
