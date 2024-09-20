@@ -27,6 +27,9 @@ For a comprehensive introduction of the subnet, please refer to the blog post:
 
 [Run a miner](docs/run_miner.md)
 
+The current state of the models being fine-tuned in the subnet can be visualized in the leaderboard:
+
+[Genki-Dama Subnet Leaderboard](https://huggingface.co/spaces/crynux-ai/genki-dama-leaderboard)
 
 ---
 - [Introduction](#introduction)
