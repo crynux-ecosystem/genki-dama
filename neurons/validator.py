@@ -776,13 +776,13 @@ class Validator:
         min_sim_score = min(similarity_score_per_uid.values())
         max_sim_score = max(similarity_score_per_uid.values())
 
-        normalized_sim_scores_per_user = {uid: (score - min_sim_score) / (max_sim_score - min_sim_score)
+        normalized_sim_scores_per_user = {uid: (score - min_sim_score) / (max_sim_score - min_sim_score)  if max_sim_score - min_sim_score > 0 else 0
                      for uid, score in similarity_score_per_uid.items()}
 
         min_qa_score = min(quality_score_per_uid.values())
         max_qa_score = max(quality_score_per_uid.values())
 
-        normalized_qa_scores_per_user = {uid: (score - min_qa_score) / (max_qa_score - min_qa_score)
+        normalized_qa_scores_per_user = {uid: (score - min_qa_score) / (max_qa_score - min_qa_score)  if max_qa_score - min_qa_score > 0 else 0
                      for uid, score in quality_score_per_uid.items()}
 
         for uid in uids:
