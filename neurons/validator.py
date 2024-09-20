@@ -664,7 +664,7 @@ class Validator:
         bt.logging.debug(f"Computing scores on {uids} for competition {competition.id}")
 
         # General model quality score
-        quality_score_per_uid = {muid: None for muid in uids}
+        quality_score_per_uid = {muid: 0 for muid in uids}
 
         load_model_perf = PerfMonitor("Eval: Load model")
         run_inference_perf = PerfMonitor("Eval: Run inference")
@@ -765,13 +765,13 @@ class Validator:
         else:
             avg_similary_scores = [0]
 
-        similarity_score_per_uid = {muid: None for muid in uids}
+        similarity_score_per_uid = {muid: 0 for muid in uids}
 
         for i, uid in enumerate(uids):
             similarity_score_per_uid[uid] = avg_similary_scores[i]
             bt.logging.trace(f"Computed similarity score for uid {uid}: {similarity_score_per_uid[uid]}")
 
-        final_scores = {muid: None for muid in uids}
+        final_scores = {muid: 0 for muid in uids}
 
         min_sim_score = min(similarity_score_per_uid.values())
         max_sim_score = max(similarity_score_per_uid.values())
