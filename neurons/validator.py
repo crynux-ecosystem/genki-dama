@@ -736,6 +736,15 @@ class Validator:
                 f"Computed model quality score for uid {uid_i}: {quality_score_per_uid[uid_i]}"
             )
 
+        min_qa_score = min(quality_score_per_uid.values())
+        max_qa_score = max(quality_score_per_uid.values())
+
+        if max_qa_score == 0:
+            bt.logging.error(
+                f"No quality score computed. Skip this run"
+            )
+            return
+
         # Model similarity score
 
         if len(uids) > 1:
@@ -776,11 +785,14 @@ class Validator:
         min_sim_score = min(similarity_score_per_uid.values())
         max_sim_score = max(similarity_score_per_uid.values())
 
+        if max_sim_score == 0:
+            bt.logging.error(
+                f"No similarity score computed. Skip this run"
+            )
+            return
+
         normalized_sim_scores_per_user = {uid: (score - min_sim_score) / (max_sim_score - min_sim_score)
                      for uid, score in similarity_score_per_uid.items()}
-
-        min_qa_score = min(quality_score_per_uid.values())
-        max_qa_score = max(quality_score_per_uid.values())
 
         normalized_qa_scores_per_user = {uid: (score - min_qa_score) / (max_qa_score - min_qa_score)
                      for uid, score in quality_score_per_uid.items()}
