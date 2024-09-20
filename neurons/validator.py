@@ -662,7 +662,7 @@ class Validator:
 
         # Compute model scores.
         bt.logging.debug(f"Computing scores on {uids} for competition {competition.id}")
-        
+
         # General model quality score
         quality_score_per_uid = {muid: None for muid in uids}
 
@@ -717,7 +717,7 @@ class Validator:
 
                     with compute_quality_score_perf.sample():
                         quality_mean, _ = model_evaluator_i.get_music_quality_score(
-                            music_eval_prompts_csv.absolute(), 
+                            music_eval_prompts_csv.absolute(),
                             music_folder.absolute()
                         )
                         quality_score_per_uid[uid_i] = quality_mean
@@ -751,7 +751,7 @@ class Validator:
 
                     with compute_similarity_score_perf.sample():
                         similary_score_matrix[n_i][n_j] = MusicEvaluator.compare_music_similarity(
-                            music_folder_i.absolute(), 
+                            music_folder_i.absolute(),
                             music_folder_j.absolute()
                             )
 
@@ -773,8 +773,20 @@ class Validator:
 
         final_scores = {muid: None for muid in uids}
 
+        min_sim_score = min(similarity_score_per_uid.values())
+        max_sim_score = max(similarity_score_per_uid.values())
+
+        normalized_sim_scores_per_user = {uid: (score - min_sim_score) / (max_sim_score - min_sim_score)
+                     for uid, score in similarity_score_per_uid.items()}
+
+        min_qa_score = min(quality_score_per_uid.values())
+        max_qa_score = max(quality_score_per_uid.values())
+
+        normalized_qa_scores_per_user = {uid: (score - min_qa_score) / (max_qa_score - min_qa_score)
+                     for uid, score in quality_score_per_uid.items()}
+
         for uid in uids:
-            final_scores[uid] = similarity_score_per_uid[uid] + quality_score_per_uid[uid]
+            final_scores[uid] = (normalized_sim_scores_per_user[uid] + normalized_qa_scores_per_user[uid]) / 2
 
         # Compute softmaxed weights based on win rate.
         model_weights = torch.tensor(
@@ -840,8 +852,8 @@ class Validator:
             uid_to_block,
             uid_to_hf,
             self._get_uids_to_competition_ids(),
-            quality_score_per_uid,
-            similarity_score_per_uid,
+            normalized_qa_scores_per_user,
+            normalized_sim_scores_per_user,
             final_scores,
             tracker_competition_weights,
             load_model_perf,
