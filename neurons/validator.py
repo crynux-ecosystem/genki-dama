@@ -674,7 +674,11 @@ class Validator:
         # Generate eval prompts
         music_eval_dir = constants.ROOT_DIR / "evaluation"
         music_eval_prompts_csv = music_eval_dir / "prompts.csv"
-        music_eval_prompts = MusicEvaluator.generate_evaluation_prompts("Electronic---Chiptune", music_eval_prompts_csv)
+        music_eval_prompts = MusicEvaluator.generate_evaluation_prompts(
+            "Electronic---Chiptune", 
+            music_eval_prompts_csv,
+            50
+        )
 
         for uid_i in uids:
             bt.logging.trace(f"Getting metadata for uid: {uid_i}.")
