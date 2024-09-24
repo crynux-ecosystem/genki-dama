@@ -30,7 +30,7 @@ def validator_config():
     )
     parser.add_argument(
         "--wandb_max_steps_per_run",
-        default=50,
+        default=5,
         type=int,
         help="number of steps before creating a new wandb run",
     )
