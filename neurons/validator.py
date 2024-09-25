@@ -675,9 +675,9 @@ class Validator:
         music_eval_dir = constants.ROOT_DIR / "evaluation"
         music_eval_prompts_csv = music_eval_dir / "prompts.csv"
         music_eval_prompts = MusicEvaluator.generate_evaluation_prompts(
-            "Electronic---Chiptune", 
+            "Electronic---Chiptune",
             music_eval_prompts_csv,
-            50
+            200
         )
 
         for uid_i in uids:
