@@ -195,8 +195,6 @@ def train(
 
     save_models = save_epoch > 0
 
-    checkpoint_path = "models/"
-
     os.makedirs(checkpoint_path, exist_ok=True)
 
     current_step = 0
@@ -324,7 +322,7 @@ if __name__ == "__main__":
         "--model_id",
         type=str,
         required=False,
-        default="small",
+        default="facebook/musicgen-small",
         help="base audiocraft model id to finetune",
     )
     parser.add_argument(
