@@ -714,7 +714,7 @@ class Validator:
 
                     model_hash = ""
                     with run_inference_perf.sample():
-                        model_hash = model_i.id.hash
+                        model_hash = model_i.id.secure_hash
                         if model_hash is None or model_hash == "":
                             bt.logging.error(
                                 f"Model hash not found for: uid {uid_i}."
