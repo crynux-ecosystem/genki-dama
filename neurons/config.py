@@ -87,6 +87,12 @@ def validator_config():
         action="store_true",
         help="If using a test subtensor, then default to finney for datasource subnets.",
     )
+    parser.add_argument(
+        "--num_samples_for_evaluation",
+        type=int,
+        default=100,
+        help="The number of samples used to evaluate the model",
+    )
 
     bt.subtensor.add_args(parser)
     bt.logging.add_args(parser)

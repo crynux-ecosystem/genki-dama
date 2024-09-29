@@ -677,7 +677,7 @@ class Validator:
         music_eval_prompts = MusicEvaluator.generate_evaluation_prompts(
             "Electronic---Chiptune",
             music_eval_prompts_csv,
-            200
+            self.config.num_samples_for_evaluation
         )
 
         for uid_i in uids:
