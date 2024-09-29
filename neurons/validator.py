@@ -680,6 +680,8 @@ class Validator:
             self.config.num_samples_for_evaluation
         )
 
+        music_folders = {}
+
         for uid_i in uids:
             bt.logging.trace(f"Getting metadata for uid: {uid_i}.")
 
@@ -712,26 +714,24 @@ class Validator:
                             hotkey, model_i_metadata.id, kwargs
                         )
 
-                    model_hash = ""
+                    if model_i.id.commit is None or model_i.id.commit == "":
+                        bt.logging.error(
+                            f"Model commit not found for: uid {uid_i}."
+                        )
+                        bt.logging.error(model_i_metadata)
+                        raise Exception(f"Model hash not found for: uid {uid_i}.")
+
+                    music_folders[uid_i] = music_eval_dir / "musics" / f"{uid_i}_{model_i.id.commit}"
+                    music_folders[uid_i].mkdir(parents=True, exist_ok=True)
+
                     with run_inference_perf.sample():
-                        model_hash = model_i.id.secure_hash
-                        if model_hash is None or model_hash == "":
-                            bt.logging.error(
-                                f"Model hash not found for: uid {uid_i}."
-                            )
-                            bt.logging.error(model_i_metadata)
-                            raise Exception(f"Model hash not found for: uid {uid_i}.")
-
-                        music_folder = music_eval_dir / "musics" / f"{model_hash}"
-                        music_folder.mkdir(parents=True, exist_ok=True)
-
                         for i, prompt in enumerate(music_eval_prompts):
-                            model_evaluator_i.text_2_music(prompt, music_folder / f"music_{i}")
+                            model_evaluator_i.text_2_music(prompt, music_folders[uid_i] / f"music_{i}")
 
                     with compute_quality_score_perf.sample():
                         quality_mean, _ = model_evaluator_i.get_music_quality_score(
                             music_eval_prompts_csv.absolute(),
-                            music_folder.absolute()
+                            music_folders[uid_i].absolute()
                         )
                         quality_score_per_uid[uid_i] = quality_mean
 
@@ -768,14 +768,11 @@ class Validator:
                     if n_i >= n_j:
                         continue
 
-                    music_folder_i = music_eval_dir / "musics" / f"{uid_i}"
-                    music_folder_j = music_eval_dir / "musics" / f"{uid_j}"
-
                     with compute_similarity_score_perf.sample():
                         similary_score_matrix[n_i][n_j] = MusicEvaluator.compare_music_similarity(
-                            music_folder_i.absolute(),
-                            music_folder_j.absolute()
-                            )
+                            music_folders[uid_i].absolute(),
+                            music_folders[uid_j].absolute()
+                        )
 
             bt.logging.trace("Computed similarity matrix for all uids:")
             bt.logging.trace(similary_score_matrix)
