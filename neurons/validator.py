@@ -712,8 +712,17 @@ class Validator:
                             hotkey, model_i_metadata.id, kwargs
                         )
 
+                    model_hash = ""
                     with run_inference_perf.sample():
-                        music_folder = music_eval_dir / "musics" / f"{uid_i}"
+                        model_hash = model_i.id.hash
+                        if model_hash is None or model_hash == "":
+                            bt.logging.error(
+                                f"Model hash not found for: uid {uid_i}."
+                            )
+                            bt.logging.error(model_i_metadata)
+                            raise Exception(f"Model hash not found for: uid {uid_i}.")
+
+                        music_folder = music_eval_dir / "musics" / f"{model_hash}"
                         music_folder.mkdir(parents=True, exist_ok=True)
 
                         for i, prompt in enumerate(music_eval_prompts):
