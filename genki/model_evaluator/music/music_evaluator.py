@@ -32,7 +32,7 @@ class MusicEvaluator(object):
                 prompts.append(prompt)
                 f.write(f"{prompt}\n")
 
-        return prompts   
+        return prompts
 
     @classmethod
     def _generate_prompt(cls, style: str) -> str:

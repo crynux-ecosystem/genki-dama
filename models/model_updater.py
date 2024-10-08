@@ -64,8 +64,8 @@ class AudioModelUpdater(ModelUpdater):
         # If not we return false and will check again next time we go through the update loop.
         if curr_block - metadata.block < competition.constraints.eval_block_delay:
             bt.logging.debug(
-                f"""Sync for hotkey {hotkey} delayed as the current block: {curr_block} is not at least 
-                {competition.constraints.eval_block_delay} blocks after the upload block: {metadata.block}. 
+                f"""Sync for hotkey {hotkey} delayed as the current block: {curr_block} is not at least
+                {competition.constraints.eval_block_delay} blocks after the upload block: {metadata.block}.
                 Will automatically retry later."""
             )
             return False
@@ -125,6 +125,10 @@ class AudioModelUpdater(ModelUpdater):
             v.numel() for v in model.model.lm_model_pkg["best_state"].values()
         ) + sum(
             v.numel() for v in model.model.compression_model_pkg["best_state"].values()
+        )
+
+        bt.logging.debug(
+            f"Model {model.id.name} parameter size: {parameter_size} / ({model_constraints.min_model_parameter_size}, {model_constraints.max_model_parameter_size})"
         )
 
         if (
